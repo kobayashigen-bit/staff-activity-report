@@ -1,136 +1,449 @@
-content:
-  - name: design
-    label: レポートの見た目と文言
-    type: file
-    path: site/design.json
-    format: json
-    fields:
-      - name: title
-        label: "レポートのタイトル"
-        type: string
-      - name: reminder
-        label: "報告日数の確認メッセージ"
-        type: text
-      - name: badge
-        label: "確認バッジの文言"
-        type: string
-      - name: standard
-        label: "比較水準の文言"
-        type: string
-      - name: headerColor
-        label: "タイトル帯の色（#から始まる色コード）"
-        type: string
-      - name: numberColor
-        label: "実績の色"
-        type: string
-      - name: issueColor
-        label: "要確認の文字色"
-        type: string
-      - name: issueBackground
-        label: "要確認カードの背景色"
-        type: string
-      - name: pageBackground
-        label: "ページ背景色"
-        type: string
-      - name: titleSize
-        label: "タイトル文字サイズ（pt）"
-        type: string
-      - name: staffSize
-        label: "支店・氏名の文字サイズ（pt）"
-        type: string
-      - name: issueSize
-        label: "最上部の確認事項の文字サイズ（pt）"
-        type: string
-      - name: labelSize
-        label: "各指標の見出しサイズ（pt）"
-        type: string
-      - name: valueSize
-        label: "実績の数字サイズ（pt）"
-        type: string
-      - name: primaryValueSize
-        label: "色付きカードの実績サイズ（pt）"
-        type: string
-      - name: unitSize
-        label: "件・時間などの単位サイズ（pt）"
-        type: string
-      - name: progressSize
-        label: "進捗率の数字サイズ（pt）"
-        type: string
-      - name: standardSize
-        label: "10口達成者水準の文字サイズ（pt）"
-        type: string
-      - name: reminderSize
-        label: "確認メッセージのサイズ（pt）"
-        type: string
-      - name: conversionSize
-        label: "プレゼン率・クロージング率の見出し（pt）"
-        type: string
-      - name: badgeSize
-        label: "要確認バッジの文字サイズ（pt）"
-        type: string
-      - name: cardPadding
-        label: "ボックス内の上下余白（px）"
-        type: string
-      - name: cardGap
-        label: "ボックス同士の間隔（px）"
-        type: string
-      - name: staffGap
-        label: "スタッフ同士の間隔（px）"
-        type: string
-      - name: radius
-        label: "ボックスの角丸（px）"
-        type: string
-      - name: label_reporting
-        label: "報告日数（月累計）：見出し"
-        type: string
-      - name: show_reporting
-        label: "報告日数（月累計）：表示する"
-        type: boolean
-      - name: label_dailyHours
-        label: "1日あたりの活動時間：見出し"
-        type: string
-      - name: show_dailyHours
-        label: "1日あたりの活動時間：表示する"
-        type: boolean
-      - name: label_visits
-        label: "訪問件数：見出し"
-        type: string
-      - name: show_visits
-        label: "訪問件数：表示する"
-        type: boolean
-      - name: label_approaches
-        label: "アプローチ数：見出し"
-        type: string
-      - name: show_approaches
-        label: "アプローチ数：表示する"
-        type: boolean
-      - name: label_presentations
-        label: "プレゼン数：見出し"
-        type: string
-      - name: show_presentations
-        label: "プレゼン数：表示する"
-        type: boolean
-      - name: label_closings
-        label: "クロージング数：見出し"
-        type: string
-      - name: show_closings
-        label: "クロージング数：表示する"
-        type: boolean
-      - name: label_combined
-        label: "見込み・アポ数：見出し"
-        type: string
-      - name: show_combined
-        label: "見込み・アポ数：表示する"
-        type: boolean
-      - name: label_units
-        label: "当月累計 契約口数：見出し"
-        type: string
-      - name: show_units
-        label: "当月累計 契約口数：表示する"
-        type: boolean
-      - name: label_totalHours
-        label: "当月累計活動時間：見出し"
-        type: string
-      - name: show_totalHours
-        label: "当月累計活動時間：表示する"
-        type: boolean
+{
+  "content": [
+    {
+      "name": "design",
+      "label": "レポートの見た目と文言",
+      "type": "file",
+      "path": "site/design.json",
+      "format": "json",
+      "fields": [
+        {
+          "name": "columns",
+          "label": "ボックスの列数（スマホは常に1列）",
+          "type": "select",
+          "options": {
+            "values": [
+              {
+                "name": "1",
+                "label": "1列・縦並び"
+              },
+              {
+                "name": "2",
+                "label": "2列・横並び"
+              }
+            ]
+          }
+        },
+        {
+          "name": "detailsLabel",
+          "label": "折りたたみボタンの文言",
+          "type": "string"
+        },
+        {
+          "name": "detailsOpen",
+          "label": "詳細を最初から開いて表示する",
+          "type": "boolean"
+        },
+        {
+          "name": "showAssessment",
+          "label": "スタッフ上部の要確認一覧を表示する",
+          "type": "boolean"
+        },
+        {
+          "name": "placement_reporting",
+          "label": "報告日数（月累計）：表示場所",
+          "type": "select",
+          "options": {
+            "values": [
+              {
+                "name": "main",
+                "label": "常に表示"
+              },
+              {
+                "name": "details",
+                "label": "詳細の中に表示"
+              },
+              {
+                "name": "hidden",
+                "label": "非表示"
+              }
+            ]
+          }
+        },
+        {
+          "name": "order_reporting",
+          "label": "報告日数（月累計）：並び順（小さい順）",
+          "type": "string"
+        },
+        {
+          "name": "placement_dailyHours",
+          "label": "1日あたりの活動時間：表示場所",
+          "type": "select",
+          "options": {
+            "values": [
+              {
+                "name": "main",
+                "label": "常に表示"
+              },
+              {
+                "name": "details",
+                "label": "詳細の中に表示"
+              },
+              {
+                "name": "hidden",
+                "label": "非表示"
+              }
+            ]
+          }
+        },
+        {
+          "name": "order_dailyHours",
+          "label": "1日あたりの活動時間：並び順（小さい順）",
+          "type": "string"
+        },
+        {
+          "name": "placement_visits",
+          "label": "訪問件数：表示場所",
+          "type": "select",
+          "options": {
+            "values": [
+              {
+                "name": "main",
+                "label": "常に表示"
+              },
+              {
+                "name": "details",
+                "label": "詳細の中に表示"
+              },
+              {
+                "name": "hidden",
+                "label": "非表示"
+              }
+            ]
+          }
+        },
+        {
+          "name": "order_visits",
+          "label": "訪問件数：並び順（小さい順）",
+          "type": "string"
+        },
+        {
+          "name": "placement_approaches",
+          "label": "アプローチ数：表示場所",
+          "type": "select",
+          "options": {
+            "values": [
+              {
+                "name": "main",
+                "label": "常に表示"
+              },
+              {
+                "name": "details",
+                "label": "詳細の中に表示"
+              },
+              {
+                "name": "hidden",
+                "label": "非表示"
+              }
+            ]
+          }
+        },
+        {
+          "name": "order_approaches",
+          "label": "アプローチ数：並び順（小さい順）",
+          "type": "string"
+        },
+        {
+          "name": "placement_presentations",
+          "label": "プレゼン数：表示場所",
+          "type": "select",
+          "options": {
+            "values": [
+              {
+                "name": "main",
+                "label": "常に表示"
+              },
+              {
+                "name": "details",
+                "label": "詳細の中に表示"
+              },
+              {
+                "name": "hidden",
+                "label": "非表示"
+              }
+            ]
+          }
+        },
+        {
+          "name": "order_presentations",
+          "label": "プレゼン数：並び順（小さい順）",
+          "type": "string"
+        },
+        {
+          "name": "placement_closings",
+          "label": "クロージング数：表示場所",
+          "type": "select",
+          "options": {
+            "values": [
+              {
+                "name": "main",
+                "label": "常に表示"
+              },
+              {
+                "name": "details",
+                "label": "詳細の中に表示"
+              },
+              {
+                "name": "hidden",
+                "label": "非表示"
+              }
+            ]
+          }
+        },
+        {
+          "name": "order_closings",
+          "label": "クロージング数：並び順（小さい順）",
+          "type": "string"
+        },
+        {
+          "name": "placement_combined",
+          "label": "見込み・アポ数：表示場所",
+          "type": "select",
+          "options": {
+            "values": [
+              {
+                "name": "main",
+                "label": "常に表示"
+              },
+              {
+                "name": "details",
+                "label": "詳細の中に表示"
+              },
+              {
+                "name": "hidden",
+                "label": "非表示"
+              }
+            ]
+          }
+        },
+        {
+          "name": "order_combined",
+          "label": "見込み・アポ数：並び順（小さい順）",
+          "type": "string"
+        },
+        {
+          "name": "placement_units",
+          "label": "当月累計 契約口数：表示場所",
+          "type": "select",
+          "options": {
+            "values": [
+              {
+                "name": "main",
+                "label": "常に表示"
+              },
+              {
+                "name": "details",
+                "label": "詳細の中に表示"
+              },
+              {
+                "name": "hidden",
+                "label": "非表示"
+              }
+            ]
+          }
+        },
+        {
+          "name": "order_units",
+          "label": "当月累計 契約口数：並び順（小さい順）",
+          "type": "string"
+        },
+        {
+          "name": "placement_totalHours",
+          "label": "当月累計活動時間：表示場所",
+          "type": "select",
+          "options": {
+            "values": [
+              {
+                "name": "main",
+                "label": "常に表示"
+              },
+              {
+                "name": "details",
+                "label": "詳細の中に表示"
+              },
+              {
+                "name": "hidden",
+                "label": "非表示"
+              }
+            ]
+          }
+        },
+        {
+          "name": "order_totalHours",
+          "label": "当月累計活動時間：並び順（小さい順）",
+          "type": "string"
+        },
+        {
+          "name": "title",
+          "label": "レポートのタイトル",
+          "type": "string"
+        },
+        {
+          "name": "reminder",
+          "label": "報告日数の確認メッセージ",
+          "type": "text"
+        },
+        {
+          "name": "badge",
+          "label": "確認バッジの文言",
+          "type": "string"
+        },
+        {
+          "name": "standard",
+          "label": "比較水準の文言",
+          "type": "string"
+        },
+        {
+          "name": "headerColor",
+          "label": "タイトル帯の色（#から始まる色コード）",
+          "type": "string"
+        },
+        {
+          "name": "numberColor",
+          "label": "実績の色",
+          "type": "string"
+        },
+        {
+          "name": "issueColor",
+          "label": "要確認の文字色",
+          "type": "string"
+        },
+        {
+          "name": "issueBackground",
+          "label": "要確認カードの背景色",
+          "type": "string"
+        },
+        {
+          "name": "pageBackground",
+          "label": "ページ背景色",
+          "type": "string"
+        },
+        {
+          "name": "titleSize",
+          "label": "タイトル文字サイズ（pt）",
+          "type": "string"
+        },
+        {
+          "name": "staffSize",
+          "label": "支店・氏名の文字サイズ（pt）",
+          "type": "string"
+        },
+        {
+          "name": "issueSize",
+          "label": "最上部の確認事項の文字サイズ（pt）",
+          "type": "string"
+        },
+        {
+          "name": "labelSize",
+          "label": "各指標の見出しサイズ（pt）",
+          "type": "string"
+        },
+        {
+          "name": "valueSize",
+          "label": "実績の数字サイズ（pt）",
+          "type": "string"
+        },
+        {
+          "name": "primaryValueSize",
+          "label": "色付きカードの実績サイズ（pt）",
+          "type": "string"
+        },
+        {
+          "name": "unitSize",
+          "label": "件・時間などの単位サイズ（pt）",
+          "type": "string"
+        },
+        {
+          "name": "progressSize",
+          "label": "進捗率の数字サイズ（pt）",
+          "type": "string"
+        },
+        {
+          "name": "standardSize",
+          "label": "10口達成者水準の文字サイズ（pt）",
+          "type": "string"
+        },
+        {
+          "name": "reminderSize",
+          "label": "確認メッセージのサイズ（pt）",
+          "type": "string"
+        },
+        {
+          "name": "conversionSize",
+          "label": "プレゼン率・クロージング率の見出し（pt）",
+          "type": "string"
+        },
+        {
+          "name": "badgeSize",
+          "label": "要確認バッジの文字サイズ（pt）",
+          "type": "string"
+        },
+        {
+          "name": "cardPadding",
+          "label": "ボックス内の上下余白（px）",
+          "type": "string"
+        },
+        {
+          "name": "cardGap",
+          "label": "ボックス同士の間隔（px）",
+          "type": "string"
+        },
+        {
+          "name": "staffGap",
+          "label": "スタッフ同士の間隔（px）",
+          "type": "string"
+        },
+        {
+          "name": "radius",
+          "label": "ボックスの角丸（px）",
+          "type": "string"
+        },
+        {
+          "name": "label_reporting",
+          "label": "報告日数（月累計）：見出し",
+          "type": "string"
+        },
+        {
+          "name": "label_dailyHours",
+          "label": "1日あたりの活動時間：見出し",
+          "type": "string"
+        },
+        {
+          "name": "label_visits",
+          "label": "訪問件数：見出し",
+          "type": "string"
+        },
+        {
+          "name": "label_approaches",
+          "label": "アプローチ数：見出し",
+          "type": "string"
+        },
+        {
+          "name": "label_presentations",
+          "label": "プレゼン数：見出し",
+          "type": "string"
+        },
+        {
+          "name": "label_closings",
+          "label": "クロージング数：見出し",
+          "type": "string"
+        },
+        {
+          "name": "label_combined",
+          "label": "見込み・アポ数：見出し",
+          "type": "string"
+        },
+        {
+          "name": "label_units",
+          "label": "当月累計 契約口数：見出し",
+          "type": "string"
+        },
+        {
+          "name": "label_totalHours",
+          "label": "当月累計活動時間：見出し",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

@@ -5,6 +5,7 @@ for(const f of fields){
  const v=design[f.name];
  if(f.type==='number'&&(String(v).trim()===''||!Number.isFinite(Number(v))||Number(v)<0||Number(v)>100))throw Error(`${f.label}: 0〜100の数値を入力してください`);
  if(f.type==='boolean'&&typeof v!=='boolean')throw Error(`${f.label}: 真偽値が必要です`);
+ if(f.type==='select'&&!f.options.some(x=>x.name===v))throw Error(`${f.label}: 選択肢から選んでください`);
  if(['string','text'].includes(f.type)&&typeof v!=='string')throw Error(`${f.label}: 文字を入力してください`);
  if((f.name.endsWith('Color')||f.name.endsWith('Background'))&&!/^#[\da-f]{6}$/i.test(v))throw Error(`${f.label}: #123456形式で入力してください`);
 }
