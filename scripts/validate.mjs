@@ -3,7 +3,7 @@ const design=JSON.parse(fs.readFileSync('site/design.json','utf8'));
 const fields=JSON.parse(fs.readFileSync('site/design-fields.json','utf8'));
 for(const f of fields){
  const v=design[f.name];
- if(f.type==='number'&&(!Number.isFinite(v)||v<0||v>100))throw Error(`${f.label}: 0〜100の数値を入力してください`);
+ if(f.type==='number'&&(String(v).trim()===''||!Number.isFinite(Number(v))||Number(v)<0||Number(v)>100))throw Error(`${f.label}: 0〜100の数値を入力してください`);
  if(f.type==='boolean'&&typeof v!=='boolean')throw Error(`${f.label}: 真偽値が必要です`);
  if(['string','text'].includes(f.type)&&typeof v!=='string')throw Error(`${f.label}: 文字を入力してください`);
  if((f.name.endsWith('Color')||f.name.endsWith('Background'))&&!/^#[\da-f]{6}$/i.test(v))throw Error(`${f.label}: #123456形式で入力してください`);
