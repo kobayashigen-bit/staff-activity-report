@@ -1,35 +1,56 @@
-# スタッフ別活動レポート
+# スタッフ別活動レポートの編集ガイド
 
-## 編集する方へ
+[編集画面を開く](https://app.pagescms.org/kobayashigen-bit/staff-activity-report/main/file/design) ｜ [見た目を試す](https://kobayashigen-bit.github.io/staff-activity-report/editor.html)
 
-HTMLやMarkdownを書き換える必要はありません。Pages CMSの「レポートの見た目と文言」で変更して保存すると、GitHub Pagesに自動反映される構成です。
+## 日常の変更手順
 
-1. 管理者から共有されたPages CMSの編集画面を開きます。
-2. 「レポートの見た目と文言」を開き、タイトル・文字サイズ・色・カードの余白などを変更します。
-3. 保存します。保存は公開につながるため、入力内容を確認してください。
-4. GitHub Actionsの公開処理が完了したら、レポートを再読み込みします。
+1. 編集画面にGitHubアカウントでログインします。
+2. 文言、文字サイズ（pt）、色、余白、表示する項目を変更します。文字サイズは小数点も入力できます。
+3. 右上の **Save** を押します。保存すると公開処理が自動で始まります。
+4. 数分後にレポートを再読み込みして確認します。
 
-実績値・対象者・判定はGAS側で集計します。デザイン設定は別ファイルに保存するため、日次の実績更新で上書きされません。
+変更は13エリア共通です。個人の実績値や要確認の判定は変更されません。保存内容はGitHubに履歴として残ります。
 
-## 管理者の初期設定
+「見た目を試す」はサンプル数字でのプレビュー専用です。ここでの変更は公開されないので、公開したい設定は編集画面で保存してください。
 
-- GitHubにこのフォルダを新しいリポジトリとして登録します。
-- Settings → Pages → Sourceを「GitHub Actions」に設定します。
-- https://app.pagescms.org/ にGitHubでログインし、このリポジトリだけを対象にアプリを接続します。
-- 必要に応じて上司をPages CMSへメール招待します。
-- GAS接続は設定済みです（バージョン52）。再設置時のみ `gas/PagesExport.gs` を利用します。
-- `site/connection.json` のGAS URLを確認します。
+## 変更できる内容
 
-## 構成
+- タイトル、見出し、確認メッセージ
+- 文字と数字のサイズ
+- 背景色、実績の色、要確認の色
+- カードの余白・間隔・角丸
+- 各指標の表示／非表示
 
-- `site/design.json`: 編集画面で保存するデザインと文言。
-- `.pages.yml`: コード不要の編集フォーム定義。
-- `site/index.html`: 全エリア共通の閲覧画面。
-- `site/connection.json`: 実績データの接続先。
-- `.github/workflows/pages.yml`: 保存後の自動公開。
+色は `#173e7c` のような6桁の色コードで入力します。サイズや余白は0〜100の範囲です。設定が不正な場合は自動公開を止め、前の公開版が残ります。
 
-エリアURLは `?area=iwate` などを使用します。GitHub Pagesで公開されるレポートはURLを知っている人が閲覧できます。
+## レポートURL
 
-## 状態
+| エリア | レポート |
+|---|---|
+| 長崎 | [開く](https://kobayashigen-bit.github.io/staff-activity-report/?area=nagasaki) |
+| 福岡1 | [開く](https://kobayashigen-bit.github.io/staff-activity-report/?area=fukuoka1) |
+| 福岡2 | [開く](https://kobayashigen-bit.github.io/staff-activity-report/?area=fukuoka2) |
+| 中国1 | [開く](https://kobayashigen-bit.github.io/staff-activity-report/?area=chugoku1) |
+| 中国2 | [開く](https://kobayashigen-bit.github.io/staff-activity-report/?area=chugoku2) |
+| 中国3,4 | [開く](https://kobayashigen-bit.github.io/staff-activity-report/?area=chugoku34) |
+| 近畿1 | [開く](https://kobayashigen-bit.github.io/staff-activity-report/?area=kinki1) |
+| 近畿2 | [開く](https://kobayashigen-bit.github.io/staff-activity-report/?area=kinki2) |
+| 近畿3 | [開く](https://kobayashigen-bit.github.io/staff-activity-report/?area=kinki3) |
+| 宮城 | [開く](https://kobayashigen-bit.github.io/staff-activity-report/?area=miyagi) |
+| 岩手 | [開く](https://kobayashigen-bit.github.io/staff-activity-report/?area=iwate) |
+| 秋田 | [開く](https://kobayashigen-bit.github.io/staff-activity-report/?area=akita) |
+| 青森 | [開く](https://kobayashigen-bit.github.io/staff-activity-report/?area=aomori) |
 
-初期構築中。GASのJSON接続機能は2026年11月9日にバージョン52として公開済み。ローカルの別オリジン画面から岩手の実データ11名を読み込めることを確認済みです。GitHubへの設置・Pages CMS認証・GitHub Pages上での接続はログイン待ちです。
+## 実績データの更新
+
+既存GASの毎朝8時（日本時間）の更新を継続します。データ更新でデザイン設定は上書きされません。画面はGASの保存済みデータを取得し、開いている間は定期的に再取得します。
+
+## 上司へ共有する際に
+
+閲覧URLと編集URLは別です。編集にはPages CMSと対象リポジトリへの権限が必要です。GitHubユーザー名が確認できたら管理者が編集者として共有します。パスワードは共有しません。
+
+## 公開処理の確認・復元
+
+[公開処理の状況](https://github.com/kobayashigen-bit/staff-activity-report/actions)で緑のチェックが付けば公開完了です。前の値へ戻す場合は編集画面で数値・文言を戻して保存します。履歴からの復元はリポジトリ管理者が行います。
+
+HTML全体の構造や集計ロジックの変更は、この設定画面の対象外です。開発者がソースを編集します。
