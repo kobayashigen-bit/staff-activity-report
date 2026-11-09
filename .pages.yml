@@ -34,100 +34,52 @@ content:
         type: string
       - name: titleSize
         label: "タイトル文字サイズ（pt）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: staffSize
         label: "支店・氏名の文字サイズ（pt）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: issueSize
         label: "最上部の確認事項の文字サイズ（pt）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: labelSize
         label: "各指標の見出しサイズ（pt）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: valueSize
         label: "実績の数字サイズ（pt）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: primaryValueSize
         label: "色付きカードの実績サイズ（pt）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: unitSize
         label: "件・時間などの単位サイズ（pt）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: progressSize
         label: "進捗率の数字サイズ（pt）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: standardSize
         label: "10口達成者水準の文字サイズ（pt）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: reminderSize
         label: "確認メッセージのサイズ（pt）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: conversionSize
         label: "プレゼン率・クロージング率の見出し（pt）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: badgeSize
         label: "要確認バッジの文字サイズ（pt）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: cardPadding
         label: "ボックス内の上下余白（px）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: cardGap
         label: "ボックス同士の間隔（px）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: staffGap
         label: "スタッフ同士の間隔（px）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: radius
         label: "ボックスの角丸（px）"
-        type: number
-        options:
-          min: 0
-          max: 100
+        type: string
       - name: label_reporting
         label: "報告日数（月累計）：見出し"
         type: string
