@@ -1,0 +1,98 @@
+{
+  "areaLabel": "プレビュー",
+  "month": "2026-11",
+  "months": [
+    "2026-11"
+  ],
+  "cutoff": "2026-11-09",
+  "reportUntil": "2026-11-08",
+  "issues": [],
+  "staff": [
+    {
+      "name": "サンプルA",
+      "branch": "見本",
+      "days": 4,
+      "reportedDays": 4,
+      "units": 2,
+      "minutes": 912,
+      "primaryIssue": "dailyHours",
+      "presentationRate": 0.3333333333333333,
+      "closingRate": 0.2,
+      "metrics": {
+        "dailyHours": {
+          "value": 3.8,
+          "goal": 5,
+          "attention": true
+        },
+        "visits": {
+          "value": 120,
+          "goal": 800,
+          "attention": false
+        },
+        "approaches": {
+          "value": 30,
+          "goal": 120,
+          "attention": false
+        },
+        "presentations": {
+          "value": 10,
+          "goal": 40,
+          "attention": false
+        },
+        "closings": {
+          "value": 2,
+          "goal": 25,
+          "attention": true
+        },
+        "combined": {
+          "value": 4,
+          "goal": 25,
+          "attention": false
+        }
+      }
+    },
+    {
+      "name": "サンプルB",
+      "branch": "見本",
+      "days": 3,
+      "reportedDays": 3,
+      "units": 2,
+      "minutes": 684,
+      "primaryIssue": "dailyHours",
+      "presentationRate": 0.3333333333333333,
+      "closingRate": 0.2,
+      "metrics": {
+        "dailyHours": {
+          "value": 3.8,
+          "goal": 5,
+          "attention": true
+        },
+        "visits": {
+          "value": 120,
+          "goal": 800,
+          "attention": false
+        },
+        "approaches": {
+          "value": 30,
+          "goal": 120,
+          "attention": false
+        },
+        "presentations": {
+          "value": 10,
+          "goal": 40,
+          "attention": false
+        },
+        "closings": {
+          "value": 2,
+          "goal": 25,
+          "attention": true
+        },
+        "combined": {
+          "value": 4,
+          "goal": 25,
+          "attention": false
+        }
+      }
+    }
+  ]
+}

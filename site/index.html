@@ -1,0 +1,183 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>スタッフ別活動レポート</title>
+<style>
+:root{--blue:#2467db;--navy:#173e7c;--ink:#20334c;--muted:#62748b;--line:#dfe7f1;--bg:#f4f7fb}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 "Noto Sans JP","Yu Gothic",Meiryo,sans-serif}button,input,select{font:inherit}header{background:var(--navy);color:#fff;padding:27px max(24px,calc((100% - 1040px)/2));}header small{color:#b9d2fa;font-size:11px;letter-spacing:.16em}h1{font-size:25px;margin:4px 0}header p{margin:0;color:#d6e4fa;font-size:13px}main{max-width:1088px;margin:auto;padding:24px}.filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;background:#fff;border:1px solid var(--line);padding:20px;border-radius:14px}label{font-size:12px;color:var(--muted);display:block}select,input{display:block;width:100%;height:44px;border:1px solid #cbd8e8;border-radius:7px;background:#fff;color:var(--ink);padding:0 10px;margin-top:5px}button{border:0;border-radius:7px;background:var(--blue);color:#fff;padding:10px 18px;cursor:pointer;min-height:44px}button:disabled{opacity:.5;cursor:wait}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #f3b549;outline-offset:3px}.schedule{align-self:center;font-size:13px;color:var(--navy);padding-top:17px}.schedule small{color:var(--muted);font-size:11px}.status{font-size:12px;color:var(--muted);margin:10px 2px 20px}.notice{padding:12px 16px;border-radius:8px;background:#fff4df;color:#775322;margin-bottom:18px;font-size:13px}.error{background:#ffeded;color:#a52222}.identity{display:flex;justify-content:space-between;align-items:center;margin:28px 0 14px;gap:12px}.identity h2{margin:0;font-size:25px}.identity p{margin:0;color:var(--muted);font-size:13px}.pill{font-size:12px;padding:6px 12px;border-radius:30px;background:#e7f0ff;color:#2053a4;white-space:nowrap}.assessment{padding:18px 20px;border:1px solid #e7cf9e;border-left:4px solid #d89a2f;border-radius:10px;background:#fffaf0;margin-bottom:20px}.assessment.good{background:#eef8f4;border-color:#badfce;border-left-color:#35846a}.assessment strong{display:block;font-size:16px}.assessment p{margin:4px 0 0;font-size:13px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:21px 23px}.card h3{font-size:13px;font-weight:500;color:var(--muted);margin:0 0 9px}.metric{font-size:34px;font-weight:700;letter-spacing:-.03em;color:var(--blue);line-height:1.3}.unit{font-size:13px;font-weight:400;letter-spacing:0;color:var(--muted);margin-left:7px}.bar{height:6px;background:#e9eef5;border-radius:8px;margin:18px 0 10px;overflow:hidden}.bar span{display:block;background:var(--blue);height:100%;border-radius:8px}.meta{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted)}.delta{color:#385779}.section{margin-top:26px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:22px}.section h2{font-size:17px;margin:0 0 16px}.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.flow>div{background:#f3f7fd;border-radius:8px;padding:14px}.flow b{font-size:24px;color:var(--navy)}.flow p{margin:3px 0;font-size:12px;color:var(--muted)}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}th{text-align:right;background:#f6f8fc;color:var(--muted);font-weight:500}td{text-align:right}th,td{padding:11px 12px;border-bottom:1px solid var(--line)}th:first-child,td:first-child{text-align:left}.spark{display:flex;align-items:end;gap:3px;height:130px;margin:15px 0 0;border-bottom:1px solid var(--line)}.spark>div{flex:1;min-width:0;display:flex;align-items:center;flex-direction:column;justify-content:end;height:100%}.spark i{display:block;background:#91b4ec;width:80%;min-height:0;border-radius:3px 3px 0 0}.spark span{font-size:9px;color:var(--muted);height:18px}.legend{font-size:12px;color:var(--muted)}details{margin-top:20px}summary{cursor:pointer;font-size:13px;color:var(--navy)}details p,details li{font-size:12px;color:var(--muted)}footer{font-size:11px;color:var(--muted);padding:24px 0}#empty{padding:45px;text-align:center;color:var(--muted)}[hidden]{display:none!important}@media(max-width:600px){header{padding:20px}h1{font-size:21px}main{padding:16px}.filters{grid-template-columns:1fr 1fr;padding:15px;gap:12px}.filters .staffFilter{grid-column:auto}.cards{grid-template-columns:1fr}.card{padding:18px 20px}.identity{align-items:start}.identity h2{font-size:23px}.pill{white-space:normal;max-width:130px}.section{padding:17px}.flow{gap:6px}.flow>div{padding:10px}.flow b{font-size:20px}.meta{font-size:12px}.spark{gap:1px}}@media print{header{background:#fff;color:#20334c}header p,header small{color:#62748b}.filters,#refresh{display:none}.card,.section{break-inside:avoid}main{max-width:none}}
+.monthPending,.channelChart{display:flex;gap:12px;overflow-x:auto;padding:12px 0}.monthPending>div{min-width:66px;flex:1;text-align:center;border:1px dashed var(--line);padding:25px 4px}.monthPending span,.monthPending small{display:block}.monthPending small,.monthBar small{font-size:11px;color:var(--muted)}.chartLegend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px}.chartLegend i{display:inline-block;width:10px;height:10px;margin-right:5px;border-radius:2px}.monthBar{min-width:68px;flex:1;text-align:center}.barStack{height:160px;display:flex;flex-direction:column-reverse;justify-content:flex-start;width:32px;margin:6px auto}.monthBar b{font-size:12px}
+main{max-width:900px}.memberCount{font-size:14px;font-weight:700;margin:22px 0 8px;color:var(--navy)}
+.staffReport{padding:0 0 32px;margin:0 0 36px;border-bottom:3px solid #c9d8ea}.staffReport:last-child{border-bottom:0}
+.staffReport .identity{background:#eaf1fb;border-left:4px solid var(--blue);padding:16px;border-radius:8px;position:relative}
+.card.attention,.flow>div.attention{background:#fff1e3;border:1px solid #e7b47e}.attention .metric,.attention b,.attention .delta,.issueNote{color:#a43720}
+.attentionLabel{display:inline-block;color:#a43720;border:1px solid #dda481;border-radius:4px;font-size:11px;font-weight:700;padding:1px 7px;margin-bottom:10px}.issueNote{font-size:12px;margin:12px 0 0}
+@media(max-width:600px){.filters{grid-template-columns:1fr 1fr}.staffReport{margin-bottom:28px;padding-bottom:24px}.identity{flex-wrap:wrap}.staffReport .identity h2{font-size:23px}.flow{grid-template-columns:1fr}.flow>div{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:12px}.flow>div p{margin:0}.flow>div b{grid-column:2;grid-row:1/3}.channelChart{gap:8px}.monthPending{grid-template-columns:repeat(2,1fr)}.section h2{font-size:16px}}
+.weeklyIssue{padding:12px;background:#fff1e3;border:1px solid #e7b47e;border-radius:6px}.preEmployment{display:flex;align-items:center;justify-content:center;min-height:182px;color:var(--muted);font-size:12px}.flow{grid-template-columns:repeat(2,minmax(0,1fr))}@media(max-width:600px){.flow{grid-template-columns:1fr}} .conversion{border-top:1px solid var(--line);margin-top:16px;padding-top:12px;font-size:13px}.conversion>div{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.conversion strong{font-size:22px;color:var(--navy)}.conversion small{display:block;color:var(--muted);font-size:11px;margin-top:4px}.conversionAlert strong,.conversionAlert>div{color:#a43720} 
+.card.attention{background:#fff0df;border:2px solid #e5a25d}
+.card.attention .metric,.card.attention .metric .unit,.card.attention h3,.card.attention .delta,.belowGoal .metric,.belowGoal .metric .unit,.lowDaily,.goalNote{color:#b42318}
+.dailyValue{font-size:13px;margin:14px 0 0}.dailyValue strong{font-size:20px}.dailyValue small{display:block;font-size:11px}.goalNote{font-size:11px;margin:8px 0 0}
+.weeks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}.weekBox{padding:9px;border:1px solid #dfe7f1;border-radius:7px;display:flex;flex-direction:column;background:#f7f9fc;font-size:12px}.weekBox strong{font-size:22px}.weekBox small{font-size:10px}.weekBox.weekAlert{background:#ffe8ce;border-color:#e5a25d;color:#b42318}.meta{flex-wrap:wrap}.attentionLabel{color:#b42318}
+
+/* 1pt = 4/3 CSS px. Staff identity keeps its previous type sizes. */
+body{font-size:calc(15px + 5pt)}header small{font-size:calc(11px + 5pt)}h1{font-size:calc(25px + 5pt)}
+label,.status,.meta,.legend{font-size:calc(12px + 5pt)}.schedule,.notice{font-size:calc(13px + 5pt)}.schedule small{font-size:calc(11px + 5pt)}.memberCount{font-size:calc(14px + 5pt)}
+.assessment strong{font-size:calc(16px + 10pt)}.assessment p{font-size:calc(13px + 10pt)}
+.card h3{font-size:calc(13px + 10pt);line-height:1.45}.metric{font-size:calc(34px + 5pt);display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px}.unit{font-size:calc(13px + 5pt);margin-left:0}
+.card.attention .metric{font-size:calc(34px + 5pt)}.card.attention .unit{font-size:calc(13px + 10pt)}
+.attentionLabel{font-size:calc(11px + 5pt)}.dailyValue,.conversion{font-size:calc(13px + 5pt)}.dailyValue strong{font-size:calc(20px + 5pt)}.dailyStandard{font-size:calc(11px + 5pt);color:var(--muted);margin:8px 0 0}
+.conversion strong{font-size:calc(22px + 5pt)}.conversion small{font-size:calc(11px + 5pt)}
+.weekBox{font-size:calc(12px + 5pt)}.weekBox strong{font-size:calc(22px + 5pt)}.weekBox small{font-size:calc(10px + 5pt)}
+.progress{font-size:inherit;display:inline-flex;align-items:baseline;gap:3px;flex-wrap:wrap}.progressLabel{font-size:calc(11px + 5pt);color:var(--muted);width:100%;line-height:1.25}.metric:has(.progress){align-items:flex-end}.progress .unit{font-size:calc(13px + 5pt)}
+.cards{grid-template-columns:1fr}.identity h2{overflow-wrap:anywhere}.filters{grid-template-columns:1fr 1fr}
+@media(max-width:600px){h1{font-size:calc(21px + 5pt)}.filters{grid-template-columns:1fr}.schedule{padding-top:0}.meta{font-size:calc(12px + 5pt)}.card{padding:18px 16px}.conversion>div{flex-wrap:wrap}.assessment{padding:16px}.weeks{grid-template-columns:1fr 1fr}}
+
+.meta .standard{font-size:calc(12px + 10pt);font-weight:700;color:var(--navy);line-height:1.5}
+.progress{font-size:.8em;display:inline-flex;flex-wrap:nowrap;align-items:baseline;gap:0;white-space:nowrap;line-height:1.3}
+.progressCaption{font-size:calc(11px + 5pt)}.progressNumber{font-size:inherit}.metric:has(.progress){align-items:baseline;gap:4px 6px}
+.conversionLabel{display:inline;line-height:1.6;overflow-wrap:anywhere}.conversion>div{display:block}.conversion strong{display:block;margin-top:6px}
+.reportReminder{font-size:calc(13px + 5pt);margin:12px 0 0;color:var(--ink)}
+
+.assessmentBadge{display:inline-block;border:1px solid #e6a276;border-radius:4px;padding:2px 9px;font-size:18px;font-weight:700;line-height:1.5;background:#fff4e8;color:#b42318}
+.assessment .assessmentGap{margin:12px 0 0}.assessmentGap strong{color:#b42318;line-height:1.5}
+.assessment .assessmentBasis{font-size:calc(13px + 5pt);margin:4px 0 0}.assessment .assessmentUnit{font-size:calc(11px + 5pt);color:var(--muted);margin:6px 0 0}
+.assessmentValue{display:table;max-width:100%}.assessmentValue .assessmentUnit{text-align:right;margin-top:0}
+.assessmentGap strong{display:inline}.assessmentComparison{font-size:calc(13px + 5pt);color:var(--ink)}
+.assessmentInlineUnit{font-size:calc(11px + 5pt);color:var(--muted)}
+
+.staffReport,.staffReport:last-child{background:#edf3fb;border:2px solid #9bb5d8;border-radius:16px;padding:18px;margin:0 0 44px;box-shadow:0 4px 12px #173e7c0d}
+.staffReport .identity{margin:0 0 18px;background:#dbe8fa;border-left:5px solid #2467db;padding:16px;border-radius:8px}
+.staffEnd{margin-top:22px;border-top:2px solid #9bb5d8;padding-top:14px;text-align:right;color:#3c587b;font-size:17px;font-weight:700}
+.cumulativeStandard{font-size:calc(13px + 5pt);margin:14px 0 0;color:var(--muted)}.cumulativeStandard strong{color:var(--navy)}
+@media(max-width:600px){main{padding:16px 8px}.staffReport,.staffReport:last-child{padding:8px;border-radius:12px;margin-bottom:32px}.staffReport .identity{padding:12px}.card{padding:18px 14px}.staffEnd{padding:14px 6px 6px;font-size:16px}}
+.assessmentGap strong.secondaryIssue{color:var(--muted)}
+
+.assessmentGap strong{font-size:calc(16px + 5pt)}
+.metric{font-size:34px}
+.card.attention .metric{font-size:calc(34px + 5pt)}
+h1{font-size:25px}
+@media(max-width:600px){h1{font-size:21px}}
+
+.card h3{font-size:calc(13px + 4pt)}
+.card .metric{font-size:26px}
+.card.attention .metric{font-size:calc(34px - 1pt)}
+.card .progress{font-size:27.2px}
+.card.attention .progress{font-size:32.533333px}
+.card .meta{font-size:calc(12px - 1pt)}
+.card .meta .standard{font-size:calc(12px + 4pt)}
+.card .reportReminder{font-size:calc(13px - 1pt)}
+.card .attentionLabel{font-size:calc(11px - 1pt)}
+.card .conversionLabel{font-size:calc(13px - 1pt)}
+.card{padding-top:14px;padding-bottom:14px}.card .bar{margin-top:12px;margin-bottom:8px}.card .conversion{margin-top:12px;padding-top:9px}
+@media(max-width:600px){.card{padding-top:13px;padding-bottom:13px}}
+.card .attentionLabel{font-size:12px;padding:2px 8px}.assessmentBadge{font-size:20px;padding:3px 10px}
+
+.card h3{font-size:calc(13px + 1pt)}
+.card .metric{font-size:22px}
+.card.attention .metric{font-size:calc(34px - 4pt)}
+.card .progress{font-size:23.2px}
+.card.attention .progress{font-size:28.533333px}
+.card .meta{font-size:calc(12px - 4pt)}
+.card .meta .standard{font-size:calc(12px + 1pt)}
+.card .reportReminder{font-size:calc(13px - 4pt)}
+.card .conversionLabel{font-size:calc(13px + 2pt)}
+.card .conversion strong{font-size:calc(22px + 2pt)}
+.card .conversionUnit{font-size:calc(22px + 5pt)}
+</style></head><body>
+<header><h1 id="title">スタッフ別活動レポート</h1></header>
+<main><section class="filters" aria-label="表示条件">
+
+<label>対象月<select id="month"></select></label></section>
+<div id="status" class="status" role="status" aria-live="polite">日報を読み込んでいます…</div><div id="notice" class="notice" hidden></div><div id="empty" hidden>掲載対象のスタッフはいません。</div>
+<div id="memberCount" class="memberCount"></div><div id="content"></div><template id="staffTemplate"><article class="staffReport"><section class="identity"><div><p data-field="affiliation"></p><h2 data-field="name"></h2></div></section>
+<section data-field="assessment" class="assessment" aria-label="確認事項"></section><div data-field="cards" class="cards"></div>
+
+
+
+</article></template>
+</main>
+<script src="design.js"></script><script>
+let data=null;let design={}, connection={};
+let loading=false;
+const areaKey=new URLSearchParams(location.search).get('area')||'iwate';
+const $=id=>document.getElementById(id), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=(n,d=0)=>n==null||!Number.isFinite(Number(n))?'—':Number(n).toLocaleString('ja-JP',{minimumFractionDigits:d,maximumFractionDigits:d});
+const signed=(n,d=0)=>n==null||!Number.isFinite(Number(n))?'—':(n>0?'＋':n<0?'−':'±')+fmt(Math.abs(n),d);
+const labels={reporting:'活動報告不足',activity:'活動時間不足',approach:'アプローチ改善',talk:'アプローチ後のトークの見直し',none:'今回の確認対象には該当しません',pending:'判定保留'};
+const channelNames=['ブロック','テナント','社内','施行後','既存','その他'];
+function options(id,values,all){const prev=$(id).value;$(id).innerHTML=(all?'<option value="">'+all+'</option>':'')+values.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join('');if(values.includes(prev))$(id).value=prev;}
+function card(title,value,unit,reference,label,diff,digits=0){
+ const ratio=value!=null&&reference>0?value/reference:null;
+ return '<article class="card"><h3>'+title+'</h3><div class="metric">'+fmt(value,digits)+'<span class="unit">'+unit+'</span>'+'</div><div class="bar" aria-hidden="true"><span style="width:'+(ratio==null?0:Math.max(0,Math.min(100,ratio*100)))+'%"></span></div><div class="meta"><span class="standard">'+label+' '+fmt(reference,label==='10口達成者水準'?0:digits)+unit+'</span><span class="delta">'+diff+'</span></div></article>';
+}
+function render(){
+ const members=data.staff.filter(s=>!s.excludeFromReport&&!!s.primaryIssue);
+ $('content').replaceChildren();$('empty').hidden=members.length>0;
+ $('memberCount').textContent=members.length?'確認対象スタッフ '+members.length+'名':'';
+ members.forEach(s=>{const root=$('staffTemplate').content.firstElementChild.cloneNode(true);$('content').appendChild(root);renderStaff(s,root);});
+}
+function renderStaff(s,root){
+ const $=field=>root.querySelector('[data-field="'+field+'"]');
+ $('affiliation').textContent='';$('affiliation').hidden=true;
+ $('name').textContent=(s.branch.endsWith('支店')?s.branch:s.branch+'支店')+'/'+s.name;
+
+ const names={reporting:'活動報告',dailyHours:'活動時間',visits:'訪問件数',approaches:'アプローチ数',presentations:'プレゼン数',closings:'クロージング数',combined:'見込み・アポ数'};
+ const top=['dailyHours','visits','approaches','presentations','closings'].find(key=>s.metrics[key]&&s.metrics[key].attention)||null;
+ const topMetric=top?s.metrics[top]:null;
+ const issueNames={dailyHours:'活動時間',visits:'訪問件数',approaches:'アプローチ',presentations:'プレゼン',closings:'クロージング',combined:'見込み・アポ数'};
+ const issueKeys=Object.keys(issueNames).filter(key=>s.metrics[key]&&s.metrics[key].attention);
+ $('assessment').innerHTML='<span class="assessmentBadge">要確認</span><div class="assessmentValue">'+issueKeys.map((key,index)=>'<p class="assessmentGap"><strong'+(index?' class="secondaryIssue"':'')+'>'+esc(issueNames[key])+'</strong></p>').join('')+'</div>';
+ const reportPeriod=data.reportUntil.slice(0,7)===data.month?Number(data.month.slice(5))+'月1日～'+Number(data.month.slice(5))+'月'+Number(data.reportUntil.slice(8))+'日':Number(data.month.slice(5))+'月1日～（集計開始前）';
+ let html='<article class="card"><h3>報告日数（月累計）</h3><div class="metric">'+fmt(s.reportedDays)+'<span class="unit">日</span></div><p class="reportReminder">出勤日数分の日報が入力されているかご確認ください</p></article>';
+ ['dailyHours','visits','approaches','presentations','closings','combined'].forEach(key=>{
+   const m=s.metrics[key],daily=key==='dailyHours',unit=daily?'時間':'件';
+   const primary=top===key;
+   const flag=primary?'要確認':m.attention?'要確認':'';
+   const showProgress=['visits','approaches','presentations','closings'].includes(key);
+   const cumulativeStandard=daily?m.goal:m.goal/20*s.days,progress=m.value==null||!s.days?null:m.value/cumulativeStandard*100;
+   const progressHtml=showProgress?'<span class="progress"><span class="progressCaption">（進捗率：</span><span class="progressNumber">'+fmt(progress,0)+'</span><span class="progressCaption">％）</span></span>':'';
+   const diff=m.value==null?null:daily?(m.value-m.goal)*60:m.value-m.goal;
+   html+='<article class="card'+(primary?' attention':'')+'">'+(flag?'<span class="attentionLabel">'+flag+'</span>':'')+'<h3>'+(daily?'1日あたりの活動時間':names[key])+'</h3><div class="metric">'+fmt(m.value,daily?1:0)+'<span class="unit">'+unit+'</span>'+progressHtml+'</div><div class="bar" aria-hidden="true"><span style="width:'+Math.max(0,Math.min(100,showProgress?(progress||0):(cumulativeStandard>0?(m.value||0)/cumulativeStandard*100:0)))+'%"></span></div><div class="meta"><span class="standard">'+'10口達成者水準'+' '+fmt(cumulativeStandard,0)+unit+'</span>'+'</div>';
+
+   if(key==='presentations'||key==='closings'){
+     const rate=key==='presentations'?s.presentationRate:s.closingRate;
+     html+='<div class="conversion"><div><span class="conversionLabel">'+(key==='presentations'?'プレゼン率（アプローチ→プレゼンへの移行率）':'クロージング率（プレゼン→クロージングへの移行率）')+'</span><strong>'+fmt(rate==null?null:rate*100,0)+'<span class="conversionUnit">%</span></strong></div></div>';
+   }
+   html+='</article>';
+ });
+ html+=card('当月累計 契約口数',s.units,'口',Number(data.cutoff.slice(8))<=7?4:Number(data.cutoff.slice(8))<=14?6:Number(data.cutoff.slice(8))<=21?8:10,'達成ライン','');
+ html+=card('当月累計活動時間',s.minutes==null?null:s.minutes/60,'時間',s.days*5,'10口達成者水準','活動 '+s.days+'日',1);
+ $('cards').innerHTML=html;
+
+}
+
+function loaded(r){loading=false;data=r;$('title').textContent=(r.areaLabel?r.areaLabel+'｜':'')+'スタッフ別活動レポート';document.title=$('title').textContent;options('month',r.months.includes(r.month)?r.months:[r.month,...r.months]);$('month').value=r.month;
+ $('status').textContent='';
+ const warnings=[];if(r.mappingPendingCount)warnings.push('氏名の照合待ち '+r.mappingPendingCount+'名。誤った不足判定を避けるため掲載を保留しています。');if(r.updateFailed)warnings.push('自動更新を再試行中です。前回正常に更新できたデータを表示しています。');if(r.preview)warnings.push('画面確認用です。データ更新はGAS版で元シートに接続します。');if(r.invalidCount)warnings.push('数値の確認待ち '+r.invalidCount+'名表記。異なる重複回答・入力不備がある人の数値判定は保留しています。');if(r.issues.length)warnings.push('日付などの不備で集計できない回答 '+r.issues.length+'件。');
+ $('notice').hidden=!warnings.length;$('notice').className='notice';$('notice').textContent=warnings.join(' ');render();applyDesign();}
+function failure(e){loading=false;$('status').textContent='更新に失敗しました。';$('notice').hidden=false;$('notice').className='notice error';$('notice').textContent=e.message||String(e);}
+
+async function refresh(){
+ if(loading)return;loading=true;$('status').textContent='実績を読み込んでいます…';
+ try{
+  const url=new URL(connection.endpoint);url.searchParams.set('format','pages');url.searchParams.set('area',areaKey);
+  if($('month').value)url.searchParams.set('month',$('month').value);
+  const response=await fetch(url.href,{cache:'no-store',signal:AbortSignal.timeout(90000)});
+  if(!response.ok)throw Error('実績を取得できませんでした。');
+  const result=await response.json();if(!Array.isArray(result.staff))throw Error('実績データの形式を確認してください。');
+  loaded(result);applyDesign();
+ }catch(e){failure(new Error('実績を読み込めませんでした。時間をおいて再読み込みしてください。'));console.error(e);}
+}
+async function boot(){
+ try{
+  [design,connection]=await Promise.all(['design.json','connection.json'].map(async path=>{const r=await fetch(path,{cache:'no-cache'});if(!r.ok)throw Error('設定読込エラー');return r.json();}));
+  applyDesign();
+  if(new URLSearchParams(location.search).get('preview')==='1'){
+    const r=await fetch('sample.json');loaded(await r.json());applyDesign();return;
+  }
+  await refresh();
+ }catch(e){failure(e);}
+}
+$('month').onchange=refresh;
+setInterval(()=>{if(!document.hidden&&!new URLSearchParams(location.search).has('preview'))refresh();},60000);
+window.addEventListener('message',event=>{
+ if(event.origin!==location.origin||event.source!==window.parent||event.data?.type!=='report-design')return;
+ design=event.data.design; if(data)render();applyDesign();
+});
+boot();
+</script></body></html>
