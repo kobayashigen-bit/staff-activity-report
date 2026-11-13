@@ -40,7 +40,7 @@ function applyDesign(){
    details.addEventListener('toggle',()=>reportDetailsState.set(identity,details.open));
    container.append(details);
   }
-  staff.querySelector('[data-field="assessment"]').hidden=design.showAssessment===false;
+  staff.querySelector('[data-field="assessment"]').hidden=design.showAssessment===false||!staff.querySelector('.assessmentGap');
  });
  document.querySelectorAll('.reportReminder').forEach(x=>x.textContent=design.reminder??'出勤日数分の日報が入力されているかご確認ください');
  document.querySelectorAll('.attentionLabel,.assessmentBadge').forEach(x=>x.textContent=design.badge||'要確認');

@@ -106,9 +106,9 @@ function card(title,value,unit,reference,label,diff,digits=0){
  return '<article class="card"><h3>'+title+'</h3><div class="metric">'+fmt(value,digits)+'<span class="unit">'+unit+'</span>'+'</div><div class="bar" aria-hidden="true"><span style="width:'+(ratio==null?0:Math.max(0,Math.min(100,ratio*100)))+'%"></span></div><div class="meta"><span class="standard">'+label+' '+fmt(reference,label==='10口達成者水準'?0:digits)+unit+'</span><span class="delta">'+diff+'</span></div></article>';
 }
 function render(){
- const members=data.staff.filter(s=>!s.excludeFromReport&&!!s.primaryIssue);
+ const members=data.staff.filter(s=>!s.excludeFromReport);
  $('content').replaceChildren();$('empty').hidden=members.length>0;
- $('memberCount').textContent=members.length?'確認対象スタッフ '+members.length+'名':'';
+ $('memberCount').textContent=members.length?'掲載スタッフ '+members.length+'名':'';
  members.forEach(s=>{const root=$('staffTemplate').content.firstElementChild.cloneNode(true);$('content').appendChild(root);renderStaff(s,root);});
 }
 function renderStaff(s,root){
@@ -116,12 +116,13 @@ function renderStaff(s,root){
  $('affiliation').textContent='';$('affiliation').hidden=true;
  $('name').textContent=(s.branch.endsWith('支店')?s.branch:s.branch+'支店')+'/'+s.name;
 
- const names={reporting:'活動報告',dailyHours:'活動時間',visits:'訪問件数',approaches:'アプローチ数',presentations:'プレゼン数',closings:'クロージング数',combined:'見込み・アポ数'};
+ const names={reporting:'活動報告',dailyHours:'募集活動時間（移動、会議時間を除く）',visits:'訪問件数',approaches:'アプローチ数',presentations:'プレゼン数',closings:'クロージング数',combined:'見込み・アポ数'};
  const top=['dailyHours','visits','approaches','presentations','closings'].find(key=>s.metrics[key]&&s.metrics[key].attention)||null;
  const topMetric=top?s.metrics[top]:null;
- const issueNames={dailyHours:'活動時間',visits:'訪問件数',approaches:'アプローチ',presentations:'プレゼン',closings:'クロージング',combined:'見込み・アポ数'};
+ const issueNames={dailyHours:'募集活動時間（移動、会議時間を除く）',visits:'訪問件数',approaches:'アプローチ',presentations:'プレゼン',closings:'クロージング',combined:'見込み・アポ数'};
  const issueKeys=Object.keys(issueNames).filter(key=>s.metrics[key]&&s.metrics[key].attention);
  $('assessment').innerHTML='<span class="assessmentBadge">要確認</span><div class="assessmentValue">'+issueKeys.map((key,index)=>'<p class="assessmentGap"><strong'+(index?' class="secondaryIssue"':'')+'>'+esc(issueNames[key])+'</strong></p>').join('')+'</div>';
+ $('assessment').hidden=issueKeys.length===0;
  const reportPeriod=data.reportUntil.slice(0,7)===data.month?Number(data.month.slice(5))+'月1日～'+Number(data.month.slice(5))+'月'+Number(data.reportUntil.slice(8))+'日':Number(data.month.slice(5))+'月1日～（集計開始前）';
  let html='<article class="card"><h3>報告日数（月累計）</h3><div class="metric">'+fmt(s.reportedDays)+'<span class="unit">日</span></div><p class="reportReminder">出勤日数分の日報が入力されているかご確認ください</p></article>';
  ['dailyHours','visits','approaches','presentations','closings','combined'].forEach(key=>{
@@ -132,7 +133,7 @@ function renderStaff(s,root){
    const cumulativeStandard=daily?m.goal:m.goal/20*s.days,progress=m.value==null||!s.days?null:m.value/cumulativeStandard*100;
    const progressHtml=showProgress?'<span class="progress"><span class="progressCaption">（進捗率：</span><span class="progressNumber">'+fmt(progress,0)+'</span><span class="progressCaption">％）</span></span>':'';
    const diff=m.value==null?null:daily?(m.value-m.goal)*60:m.value-m.goal;
-   html+='<article class="card'+(primary?' attention':'')+'">'+(flag?'<span class="attentionLabel">'+flag+'</span>':'')+'<h3>'+(daily?'1日あたりの活動時間':names[key])+'</h3><div class="metric">'+fmt(m.value,daily?1:0)+'<span class="unit">'+unit+'</span>'+progressHtml+'</div><div class="bar" aria-hidden="true"><span style="width:'+Math.max(0,Math.min(100,showProgress?(progress||0):(cumulativeStandard>0?(m.value||0)/cumulativeStandard*100:0)))+'%"></span></div><div class="meta"><span class="standard">'+'10口達成者水準'+' '+fmt(cumulativeStandard,0)+unit+'</span>'+'</div>';
+   html+='<article class="card'+(primary?' attention':'')+'">'+(flag?'<span class="attentionLabel">'+flag+'</span>':'')+'<h3>'+(daily?'1日あたりの募集活動時間（移動、会議時間を除く）':names[key])+'</h3><div class="metric">'+fmt(m.value,daily?1:0)+'<span class="unit">'+unit+'</span>'+progressHtml+'</div><div class="bar" aria-hidden="true"><span style="width:'+Math.max(0,Math.min(100,showProgress?(progress||0):(cumulativeStandard>0?(m.value||0)/cumulativeStandard*100:0)))+'%"></span></div><div class="meta"><span class="standard">'+'10口達成者水準'+' '+fmt(cumulativeStandard,0)+unit+'</span>'+'</div>';
 
    if(key==='presentations'||key==='closings'){
      const rate=key==='presentations'?s.presentationRate:s.closingRate;
@@ -141,7 +142,7 @@ function renderStaff(s,root){
    html+='</article>';
  });
  html+=card('当月累計 契約口数',s.units,'口',Number(data.cutoff.slice(8))<=7?4:Number(data.cutoff.slice(8))<=14?6:Number(data.cutoff.slice(8))<=21?8:10,'達成ライン','');
- html+=card('当月累計活動時間',s.minutes==null?null:s.minutes/60,'時間',s.days*5,'10口達成者水準','活動 '+s.days+'日',1);
+ html+=card('当月累計募集活動時間（移動、会議時間を除く）',s.minutes==null?null:s.minutes/60,'時間',s.days*5,'10口達成者水準','活動 '+s.days+'日',1);
  $('cards').innerHTML=html;
 
 }
