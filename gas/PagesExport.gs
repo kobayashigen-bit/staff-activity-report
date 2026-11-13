@@ -12,7 +12,7 @@ function pagesExport_(e) {
   var r = getDashboard(month, '', area);
   // 掲載対象に限定し、社員番号・名寄せ情報・未掲載者は出力しない。
   var fields = ['name','branch','days','reportedDays','units','minutes','metrics','presentationRate','closingRate','primaryIssue'];
-  var staff = r.staff.filter(function(s) { return !s.excludeFromReport && !!s.primaryIssue; }).map(function(s) {
+  var staff = r.staff.filter(function(s) { return s.reportEligible === true; }).map(function(s) {
     var v = {}; fields.forEach(function(k) { v[k] = s[k]; }); return v;
   });
   var out = {areaLabel:r.areaLabel, month:r.month, months:r.months, cutoff:r.cutoff,
