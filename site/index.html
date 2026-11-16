@@ -119,7 +119,7 @@ function renderStaff(s,root){
  const names={reporting:'活動報告',dailyHours:'募集活動時間（移動、会議時間を除く）',visits:'訪問件数',approaches:'アプローチ数',presentations:'プレゼン数',closings:'クロージング数',combined:'見込み・アポ数'};
  const top=['dailyHours','visits','approaches','presentations','closings'].find(key=>s.metrics[key]&&s.metrics[key].attention)||null;
  const topMetric=top?s.metrics[top]:null;
- const issueNames={dailyHours:'募集活動時間（移動、会議時間を除く）',visits:'訪問件数',approaches:'アプローチ',presentations:'プレゼン',closings:'クロージング',combined:'見込み・アポ数'};
+ const issueNames={dailyHours:'活動時間',visits:'訪問件数',approaches:'アプローチ',presentations:'プレゼン',closings:'クロージング',combined:'見込み・アポ数'};
  const issueKeys=Object.keys(issueNames).filter(key=>s.metrics[key]&&s.metrics[key].attention);
  $('assessment').innerHTML='<span class="assessmentBadge">要確認</span><div class="assessmentValue">'+issueKeys.map((key,index)=>'<p class="assessmentGap"><strong'+(index?' class="secondaryIssue"':'')+'>'+esc(issueNames[key])+'</strong></p>').join('')+'</div>';
  $('assessment').hidden=issueKeys.length===0;
