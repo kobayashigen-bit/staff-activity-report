@@ -83,6 +83,7 @@ h1{font-size:25px}
 .staffReport>summary.identity::after{content:'＋';font-size:24px;flex:none;color:var(--navy)}
 .staffReport[open]>summary.identity::after{content:'−'}
 .staffReport:not([open])>summary.identity{margin-bottom:0}
+.situationList{margin:12px 0 0;padding-left:1.4em}.situationList li.assessmentGap{font-size:16px;line-height:1.8;color:var(--ink);margin:10px 0;font-weight:500}
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
@@ -126,6 +127,21 @@ function render(){
  $('memberCount').textContent=members.length?'掲載スタッフ '+members.length+'名':'';
  members.forEach(s=>{const root=$('staffTemplate').content.firstElementChild.cloneNode(true);$('content').appendChild(root);renderStaff(selectFunnelAttention(s),root);const identity=JSON.stringify([s.branch,s.name]);root.open=staffOpenState.get(identity)===true;root.addEventListener('toggle',()=>staffOpenState.set(identity,root.open));});
 }
+function staffSituations(s,report){
+ const result=[],m=s.metrics||{},num=v=>typeof v==='number'&&Number.isFinite(v),value=k=>m[k]?.value;
+ const ratio=k=>num(value(k))&&s.days>0&&m[k].goal>0?value(k)/(m[k].goal/20*s.days):null;
+ const elapsed=report.reportUntil?.slice(0,7)===report.month?Number(report.reportUntil.slice(8)):0;
+ const threshold=elapsed>=28?14:elapsed>=21?11:elapsed>=14?7:elapsed>=7?3:null;
+ if(threshold!==null&&num(s.reportedDays)&&s.reportedDays<=threshold)result.push('活動報告がなされていない可能性がある');
+ const visits=ratio('visits'),approaches=ratio('approaches'),p=value('presentations'),c=value('closings'),a=value('approaches'),combined=value('combined');
+ if(visits!==null&&visits<=.6+1e-10&&num(s.units)&&s.units<10)result.push('訪問件数を増やすことで口数が増える可能性がある');
+ if(visits!==null&&approaches!==null&&visits>=.8-1e-10&&approaches<=.8+1e-10)result.push('アプローチ前にお断りされている可能性が高い');
+ if(num(p)&&num(a)&&a>0&&p/a<.1-1e-10)result.push('プレゼンに進めないケースが多い可能性がある');
+ if(num(p)&&num(c)&&p>0&&m.presentations.goal>0&&m.closings.goal>0&&c/p<=(m.closings.goal/m.presentations.goal)*.5+1e-10)result.push('クロージングをしていない/できないトーク設計になっている可能性がある');
+ if(num(s.contracts)&&num(c)&&c>0&&s.contracts/c<=.2+1e-10)result.push('クロージングのタイミング、文言、言い方を見直すことで契約率が向上する可能性がある');
+ if(num(combined)&&num(c)&&combined>c)result.push('見込み違いが発生している可能性がある');
+ return result;
+}
 function renderStaff(s,root){
  const $=field=>root.querySelector('[data-field="'+field+'"]');
  $('affiliation').textContent='';$('affiliation').hidden=true;
@@ -134,10 +150,9 @@ function renderStaff(s,root){
  const names={reporting:'活動報告',dailyHours:'募集活動時間（移動、会議時間を除く）',visits:'訪問件数',approaches:'アプローチ数',presentations:'プレゼン数',closings:'クロージング数',combined:'見込み・アポ数'};
  const top=['dailyHours','visits','approaches','presentations','closings'].find(key=>s.metrics[key]&&s.metrics[key].attention)||null;
  const topMetric=top?s.metrics[top]:null;
- const issueNames={dailyHours:'活動時間',visits:'訪問件数',approaches:'アプローチ',presentations:'プレゼン',closings:'クロージング',combined:'見込み・アポ数'};
- const issueKeys=Object.keys(issueNames).filter(key=>s.metrics[key]&&s.metrics[key].attention);
- $('assessment').innerHTML='<span class="assessmentBadge">要確認</span><div class="assessmentValue">'+issueKeys.map((key,index)=>'<p class="assessmentGap"><strong'+(index?' class="secondaryIssue"':'')+'>'+esc(issueNames[key])+'</strong></p>').join('')+'</div>';
- $('assessment').hidden=issueKeys.length===0;
+ const situations=staffSituations(s,data);
+ $('assessment').innerHTML='<span class="assessmentBadge">状況の確認</span><ul class="situationList">'+situations.map(text=>'<li class="assessmentGap">'+esc(text)+'</li>').join('')+'</ul>';
+ $('assessment').hidden=situations.length===0;
  const reportPeriod=data.reportUntil.slice(0,7)===data.month?Number(data.month.slice(5))+'月1日～'+Number(data.month.slice(5))+'月'+Number(data.reportUntil.slice(8))+'日':Number(data.month.slice(5))+'月1日～（集計開始前）';
  let html='<article class="card"><h3>報告日数（月累計）</h3><div class="metric">'+fmt(s.reportedDays)+'<span class="unit">日</span></div><p class="reportReminder">出勤日数分の日報が入力されているかご確認ください</p></article>';
  ['dailyHours','visits','approaches','presentations','closings','combined'].forEach(key=>{
