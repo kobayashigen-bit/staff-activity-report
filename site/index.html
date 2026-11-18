@@ -84,6 +84,25 @@ h1{font-size:25px}
 .staffReport[open]>summary.identity::after{content:'−'}
 .staffReport:not([open])>summary.identity{margin-bottom:0}
 .situationList{margin:12px 0 0;padding-left:1.4em}.situationList li.assessmentGap{font-size:16px;line-height:1.8;color:var(--ink);margin:10px 0;font-weight:500}
+
+/* Paired square metric cards; identity and assessment remain full width. */
+.staffReport .cards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;align-items:start}
+.staffReport .cards>.card{aspect-ratio:1 / 1;min-width:0;min-height:0;overflow:auto;box-sizing:border-box;padding:14px!important}
+.card .channelDetails{margin:10px 0 0;border-top:1px solid var(--line);padding-top:8px}
+.card .channelDetails summary{font-size:12px;font-weight:700;color:var(--navy)}
+.channelRows>div{display:flex;justify-content:space-between;gap:6px;padding:5px 0;font-size:12px;border-bottom:1px solid var(--line)}
+.channelRows b{white-space:nowrap}
+.compactMeta{font-size:12px;line-height:1.55;color:var(--navy);margin-top:6px}
+.subMetricLabel{font-size:12px;color:var(--muted);margin-top:7px}
+@media(max-width:600px){
+ .staffReport .cards{gap:8px!important}
+ .staffReport .cards>.card{padding:9px!important}
+ .staffReport .cards>.card h3{font-size:12px!important;margin-bottom:5px}
+ .staffReport .cards>.card .metric{font-size:22px!important;gap:3px}
+ .staffReport .cards>.card .unit{font-size:12px!important}
+ .staffReport .cards>.card .reportReminder{font-size:11px!important}
+ .compactMeta,.subMetricLabel,.card .channelDetails summary,.channelRows>div{font-size:11px}
+}
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
@@ -153,26 +172,36 @@ function renderStaff(s,root){
  const situations=staffSituations(s,data);
  $('assessment').innerHTML='<span class="assessmentBadge">状況の確認</span><ul class="situationList">'+situations.map(text=>'<li class="assessmentGap">'+esc(text)+'</li>').join('')+'</ul>';
  $('assessment').hidden=situations.length===0;
- const reportPeriod=data.reportUntil.slice(0,7)===data.month?Number(data.month.slice(5))+'月1日～'+Number(data.month.slice(5))+'月'+Number(data.reportUntil.slice(8))+'日':Number(data.month.slice(5))+'月1日～（集計開始前）';
- let html='<article class="card"><h3>報告日数（月累計）</h3><div class="metric">'+fmt(s.reportedDays)+'<span class="unit">日</span></div><p class="reportReminder">出勤日数分の日報が入力されているかご確認ください</p></article>';
- ['dailyHours','visits','approaches','presentations','closings','combined'].forEach(key=>{
-   const m=s.metrics[key],daily=key==='dailyHours',unit=daily?'時間':'件';
-   const primary=top===key;
-   const flag=primary?'要確認':m.attention?'要確認':'';
-   const showProgress=['visits','approaches','presentations','closings'].includes(key);
-   const cumulativeStandard=daily?m.goal:m.goal/20*s.days,progress=m.value==null||!s.days?null:m.value/cumulativeStandard*100;
-   const progressHtml=showProgress?'<span class="progress"><span class="progressCaption">（進捗率：</span><span class="progressNumber">'+fmt(progress,0)+'</span><span class="progressCaption">％）</span></span>':'';
-   const diff=m.value==null?null:daily?(m.value-m.goal)*60:m.value-m.goal;
-   html+='<article class="card'+(primary?' attention':'')+'">'+(flag?'<span class="attentionLabel">'+flag+'</span>':'')+'<h3>'+(daily?'1日あたりの募集活動時間（移動、会議時間を除く）':names[key])+'</h3><div class="metric">'+fmt(m.value,daily?1:0)+'<span class="unit">'+unit+'</span>'+progressHtml+'</div><div class="bar" aria-hidden="true"><span style="width:'+Math.max(0,Math.min(100,showProgress?(progress||0):(cumulativeStandard>0?(m.value||0)/cumulativeStandard*100:0)))+'%"></span></div><div class="meta"><span class="standard">'+'10口達成者水準'+' '+fmt(cumulativeStandard,0)+unit+'</span>'+'</div>';
 
-   if(key==='presentations'||key==='closings'){
-     const rate=key==='presentations'?s.presentationRate:s.closingRate;
-     html+='<div class="conversion"><div><span class="conversionLabel">'+(key==='presentations'?'プレゼン率（アプローチ→プレゼンへの移行率）':'クロージング率（プレゼン→クロージングへの移行率）')+'</span><strong>'+fmt(rate==null?null:rate*100,0)+'<span class="conversionUnit">%</span></strong></div></div>';
-   }
-   html+='</article>';
+ const breakdown=(key,time=false)=>{
+  const groups=[['ブロック',[0]],['自社イベント',[2]],['店頭イベント',[1]],['施行後訪問',[3]],['その他',[4,5]]];
+  return '<details class="channelDetails"><summary>チャネル別を見る</summary><div class="channelRows">'+groups.map(([label,indices])=>{
+   const values=indices.map(i=>s.channels?.[i]?.[key]);
+   const value=values.every(v=>typeof v==='number'&&Number.isFinite(v))?values.reduce((a,b)=>a+b,0):null;
+   return '<div><span>'+label+'</span><b>'+fmt(value==null?null:time?value/60:value,time?1:0)+(time?'時間':key==='units'?'口':'件')+'</b></div>';
+  }).join('')+'</div></details>';
+ };
+ const valueHtml=(value,unit,digits=0)=>'<div class="metric">'+fmt(value,digits)+'<span class="unit">'+unit+'</span></div>';
+ const box=(key,title,body)=>'<article data-metric="'+key+'" class="card'+(top===key?' attention':'')+'">'+(s.metrics[key]?.attention?'<span class="attentionLabel">要確認</span>':'')+'<h3>'+title+'</h3>'+body+'</article>';
+ let html=box('reporting','報告日数（月累計）',valueHtml(s.reportedDays,'日')+'<p class="reportReminder">出勤日数分の日報が入力されているかご確認ください</p>');
+ const daily=s.metrics.dailyHours;
+ html+=box('dailyHours','活動時間',valueHtml(daily.value,'時間',1)+'<div class="compactMeta">1活動日あたり<br>10口達成者水準 5時間<br>当月累計 '+fmt(s.minutes==null?null:s.minutes/60,1)+'時間</div>'+breakdown('minutes',true));
+ ['visits','approaches','presentations','closings'].forEach(key=>{
+  const m=s.metrics[key],standard=m.goal/20*s.days,progress=m.value==null||!s.days?null:m.value/standard*100;
+  let body=key==='visits'?'<div class="subMetricLabel">訪問件数</div>':'';
+  body+=valueHtml(m.value,'件');
+  body+='<div class="compactMeta">進捗率：'+fmt(progress)+'％<br>10口達成者水準 '+fmt(standard)+'件</div>';
+  if(key==='visits')body+='<div class="subMetricLabel">声掛け数</div>'+valueHtml(s.calls,'件');
+  if(key==='presentations'||key==='closings'){
+   const rate=key==='presentations'?s.presentationRate:s.closingRate;
+   body+='<div class="compactMeta">'+(key==='presentations'?'プレゼン率':'クロージング率')+' '+fmt(rate==null?null:rate*100)+'％</div>';
+  }
+  body+=breakdown(key);
+  if(key==='visits')body+='<details class="channelDetails"><summary>声掛け数の内訳</summary><div class="compactMeta">店頭イベント '+fmt(s.calls)+'件</div></details>';
+  html+=box(key,key==='visits'?'訪問件数・声掛け数':names[key],body);
  });
- html+=card('当月累計 契約口数',s.units,'口',Number(data.cutoff.slice(8))<=7?4:Number(data.cutoff.slice(8))<=14?6:Number(data.cutoff.slice(8))<=21?8:10,'達成ライン','');
- html+=card('当月累計募集活動時間（移動、会議時間を除く）',s.minutes==null?null:s.minutes/60,'時間',s.days*5,'10口達成者水準','活動 '+s.days+'日',1);
+ html+=box('contracts','契約件数',valueHtml(s.contracts,'件')+breakdown('contracts'));
+ html+=box('units','口数',valueHtml(s.units,'口')+breakdown('units'));
  $('cards').innerHTML=html;
 
 }
