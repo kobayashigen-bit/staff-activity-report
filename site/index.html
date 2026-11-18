@@ -132,6 +132,8 @@ h1{font-size:25px}
 .progressHeading b{font-size:calc(21px + 3pt)}
 .progressTarget{text-align:right;font-size:calc(12px + 3pt)}
 @media(max-width:600px){.progressHeading{font-size:calc(11px + 3pt)}.progressHeading b{font-size:calc(18px + 3pt)}.progressTarget{font-size:calc(11px + 3pt)}}
+.phenomenonHeading{display:block;font-size:16px;font-weight:700;color:var(--navy);line-height:1.5}
+.activityExclusion{display:block;font-size:.85em;font-weight:400;margin-top:4px;line-height:1.5}
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
@@ -176,17 +178,17 @@ function render(){
  members.forEach(s=>{const root=$('staffTemplate').content.firstElementChild.cloneNode(true);$('content').appendChild(root);renderStaff(selectFunnelAttention(s),root);const identity=JSON.stringify([s.branch,s.name]);root.open=staffOpenState.get(identity)===true;root.addEventListener('toggle',()=>staffOpenState.set(identity,root.open));});
 }
 function staffSituations(s,report){
- const result=[],m=s.metrics||{},num=v=>typeof v==='number'&&Number.isFinite(v),value=k=>m[k]?.value;
+ const m=s.metrics||{},num=v=>typeof v==='number'&&Number.isFinite(v),value=k=>m[k]?.value;
  const ratio=k=>num(value(k))&&s.days>0&&m[k].goal>0?value(k)/(m[k].goal/20*s.days):null;
- const elapsed=report.reportUntil?.slice(0,7)===report.month?Number(report.reportUntil.slice(8)):0;
- const threshold=elapsed>=28?14:elapsed>=21?11:elapsed>=14?7:elapsed>=7?3:null;
- if(threshold!==null&&num(s.reportedDays)&&s.reportedDays<=threshold)result.push('活動報告がなされていない可能性がある');
  const visits=ratio('visits'),approaches=ratio('approaches'),p=value('presentations'),c=value('closings'),a=value('approaches'),combined=value('combined');
- if(visits!==null&&visits<=.6+1e-10&&num(s.units)&&s.units<10)result.push('訪問件数を増やすことで口数が増える可能性がある');
- if(visits!==null&&approaches!==null&&visits>=.8-1e-10&&approaches<=.8+1e-10)result.push('アプローチ前にお断りされている可能性が高い');
- if(num(p)&&num(a)&&a>0&&p/a<.1-1e-10)result.push('プレゼンに進めないケースが多い可能性がある');
- if(num(p)&&num(c)&&p>0&&m.presentations.goal>0&&m.closings.goal>0&&c/p<=(m.closings.goal/m.presentations.goal)*.5+1e-10)result.push('クロージングをしていない/できないトーク設計になっている可能性がある');
- if(num(s.contracts)&&num(c)&&c>0&&s.contracts/c<=.2+1e-10)result.push('クロージングのタイミング、文言、言い方を見直すことで契約率が向上する可能性がある');
+ const conditions=[
+  [visits!==null&&visits<=.7+1e-10&&num(s.units)&&s.units<10,'訪問件数が不足している'],
+  [visits!==null&&approaches!==null&&visits>=.7-1e-10&&approaches<=.7+1e-10,'アプローチの前にお断りされていることが多い'],
+  [num(p)&&num(a)&&a>0&&p/a<.1-1e-10,'プレゼンまで進めないことが多い'],
+  [num(p)&&num(c)&&p>0&&c/p<=.5+1e-10,'クロージングをしていない/できないトークの流れになっている'],
+  [num(s.contracts)&&num(c)&&c>0&&s.contracts/c<=.1+1e-10,'クロージングのタイミング、文言、言い方に修正余地がある']
+ ];
+ const first=conditions.find(([matches])=>matches),result=first?[first[1]]:[];
  if(num(combined)&&num(c)&&combined>c)result.push('見込み違いが発生している可能性がある');
  return result;
 }
@@ -198,8 +200,8 @@ function renderStaff(s,root){
  const names={reporting:'活動報告',dailyHours:'募集活動時間（移動、会議時間を除く）',visits:'訪問件数',approaches:'アプローチ数',presentations:'プレゼン数',closings:'クロージング数',combined:'見込み・アポ数'};
  const top=['dailyHours','visits','approaches','presentations','closings'].find(key=>s.metrics[key]&&s.metrics[key].attention)||null;
  const topMetric=top?s.metrics[top]:null;
- const situations=staffSituations(s,data).slice(0,1);
- $('assessment').innerHTML='<span class="assessmentBadge">状況の確認</span><ul class="situationList">'+situations.map(text=>'<li class="assessmentGap">'+esc(text)+'</li>').join('')+'</ul>';
+ const situations=staffSituations(s,data);
+ $('assessment').innerHTML='<span class="phenomenonHeading">起きている可能性がある現象</span><ul class="situationList">'+situations.map(text=>'<li class="assessmentGap">'+esc(text)+'</li>').join('')+'</ul>';
  $('assessment').hidden=situations.length===0;
 
  const breakdown=(key,time=false)=>{
