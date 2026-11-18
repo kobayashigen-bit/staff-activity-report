@@ -137,6 +137,12 @@ h1{font-size:25px}
 .transitionHeading{grid-column:1/-1;text-align:left;font-size:16px;font-weight:700;line-height:1.5;margin:0 0 12px;padding-left:4px}
 @media(max-width:600px){.transitionHeading{font-size:14px;margin-bottom:10px}}
 .staffReport .cards>.card.contractAttention{border:2px solid #e5a25d}
+.staffPrintTools{display:flex;justify-content:flex-end;margin:0 0 12px}.staffPrintButton{font-size:14px}
+.printModal{position:fixed;inset:0;z-index:9999;background:#e5e7eb;overflow:auto;padding-top:78px}
+.printToolbar{position:fixed;inset:0 0 auto;min-height:68px;z-index:10000;display:flex;align-items:center;justify-content:center;gap:12px;padding:10px;background:white;box-shadow:0 2px 8px #0002;flex-wrap:wrap}
+.printToolbar strong{font-size:15px}.printToolbar span{font-size:12px}.printToolbar button{font-size:14px}
+.printFrame{display:block;width:210mm;height:297mm;border:0;margin:12px auto 24px;background:white}
+@media(max-width:600px){.printModal{padding-top:125px}.printToolbar{justify-content:flex-start}}
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
@@ -144,7 +150,7 @@ h1{font-size:25px}
 <label>対象月<select id="month"></select></label></section>
 <div id="status" class="status" role="status" aria-live="polite">日報を読み込んでいます…</div><div id="notice" class="notice" hidden></div><div id="empty" hidden>掲載対象のスタッフはいません。</div>
 <div id="memberCount" class="memberCount"></div><div id="content"></div><template id="staffTemplate"><details class="staffReport"><summary class="identity"><div><p data-field="affiliation"></p><h2 data-field="name"></h2></div></summary>
-<section data-field="assessment" class="assessment" aria-label="確認事項"></section><div data-field="cards" class="cards"></div>
+<div class="staffPrintTools"><button type="button" class="staffPrintButton">このスタッフを印刷</button></div><section data-field="assessment" class="assessment" aria-label="確認事項"></section><div data-field="cards" class="cards"></div>
 
 
 
@@ -178,7 +184,7 @@ function render(){
  const members=data.staff.filter(s=>!s.excludeFromReport);
  $('content').replaceChildren();$('empty').hidden=members.length>0;
  $('memberCount').textContent=members.length?'掲載スタッフ '+members.length+'名':'';
- members.forEach(s=>{const root=$('staffTemplate').content.firstElementChild.cloneNode(true);$('content').appendChild(root);renderStaff(selectFunnelAttention(s),root);const identity=JSON.stringify([s.branch,s.name]);root.open=staffOpenState.get(identity)===true;root.addEventListener('toggle',()=>staffOpenState.set(identity,root.open));});
+ members.forEach(s=>{const root=$('staffTemplate').content.firstElementChild.cloneNode(true);$('content').appendChild(root);renderStaff(selectFunnelAttention(s),root);root.querySelector('.staffPrintButton').addEventListener('click',()=>printStaff(root));const identity=JSON.stringify([s.branch,s.name]);root.open=staffOpenState.get(identity)===true;root.addEventListener('toggle',()=>staffOpenState.set(identity,root.open));});
 }
 function staffSituations(s,report){
  const m=s.metrics||{},num=v=>typeof v==='number'&&Number.isFinite(v),value=k=>m[k]?.value;
@@ -195,6 +201,57 @@ function staffSituations(s,report){
  if(num(combined)&&num(c)&&combined>c)result.push('見込み違いが発生している可能性がある');
  return result;
 }
+
+function printStaff(root){
+ const clone=root.cloneNode(true);clone.open=true;
+ clone.querySelectorAll('.staffPrintTools').forEach(e=>e.remove());
+ clone.querySelectorAll('.channelDetails').forEach(e=>e.open=false);
+ const style=[...document.querySelectorAll('style')].map(e=>e.textContent).join('\n');
+ const printCSS=`
+ @page{size:A4 portrait;margin:8mm}
+ *{box-sizing:border-box}html,body{margin:0!important;padding:0!important;background:white!important;color:#20334c;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .printPage{width:194mm;height:281mm;margin:0 auto;background:white;overflow:hidden}
+ .printTitle{font-size:15pt;font-weight:700;margin:0 0 3mm;line-height:1.3;color:#173e7c}
+ .staffReport,.staffReport:last-child{padding:0!important;margin:0!important;border:0!important;box-shadow:none!important;background:white!important}
+ .staffReport .identity{margin:0 0 3mm!important;padding:3mm!important;border-radius:2mm!important}
+ .staffReport .identity h2{font-size:17pt!important;line-height:1.2!important}
+ .staffReport>summary.identity::after{display:none}
+ .assessment{padding:3mm!important;margin:0 0 3mm!important;border-radius:2mm!important}
+ .phenomenonHeading{font-size:12pt!important;line-height:1.3!important}
+ .situationList{margin:1mm 0 0!important;padding-left:5mm!important}
+ .situationList li.assessmentGap{font-size:11pt!important;line-height:1.35!important;margin:1mm 0!important}
+ .staffReport .cards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3mm!important}
+ .staffReport .cards>.card{height:43mm!important;aspect-ratio:auto!important;padding:3mm!important;overflow:hidden!important;break-inside:avoid}
+ .staffReport .cards>.card h3{font-size:12pt!important;line-height:1.25!important;margin:0 0 2mm!important}
+ .staffReport .cards>.card .metric{font-size:23pt!important;line-height:1.15!important;gap:1mm!important}
+ .staffReport .cards>.card .unit{font-size:11pt!important}
+ .staffReport .cards>.card .reportReminder{font-size:12pt!important;line-height:1.5!important;margin-top:3mm!important}
+ .compactMeta,.card[data-metric="dailyHours"] .compactMeta{font-size:11pt!important;line-height:1.4!important;margin-top:2mm!important}
+ .activityExclusion{font-size:9pt!important}
+ .progressHeading{font-size:11pt!important}.progressHeading b{font-size:15pt!important}
+ .progressTarget{font-size:10pt!important}.progressTrack{height:2mm!important;margin:1mm 0!important}
+ .visualProgress{margin:1mm 0!important}
+ .subMetricLabel{font-size:10pt!important;display:inline!important}
+ .card[data-metric="visits"] .metric{display:inline-flex!important;font-size:20pt!important}
+ .card .attentionLabel{float:right;font-size:9pt!important;margin:0!important;padding:0 1mm!important}
+ .channelDetails{display:none!important}
+ .transitionFlow{padding:2mm!important;gap:1mm!important;break-inside:avoid}
+ .transitionHeading{font-size:11pt!important;margin-bottom:1mm!important}
+ .flowStage{font-size:10pt!important}.flowActual{font-size:11pt!important;margin-top:1mm!important}
+ .flowLink b{font-size:12pt!important}.flowLink>span{font-size:20pt!important}.flowLink small{font-size:8pt!important}
+ @media screen{body{padding:8mm!important;background:#e5e7eb!important}}
+ `;
+ const page='<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>'+esc(root.querySelector('h2').textContent)+' 印刷</title><style>'+style+'\n'+printCSS+'</style></head><body><div class="printPage"><div class="printTitle">'+esc(document.title)+' / '+esc(data.month)+'</div>'+clone.outerHTML+'</div></body></html>';
+ const modal=document.createElement('div');modal.className='printModal';modal.setAttribute('role','dialog');modal.setAttribute('aria-label','スタッフ別 A4印刷プレビュー');modal.setAttribute('aria-modal','true');
+ modal.innerHTML='<div class="printToolbar"><strong>A4縦・1名分の印刷プレビュー</strong><span>内訳は折りたたんだ状態で印刷します</span><button class="printGo">印刷する</button><button class="printClose">閉じる</button></div><iframe title="A4印刷イメージ" class="printFrame"></iframe>';
+ document.body.append(modal);const frame=modal.querySelector('iframe');frame.srcdoc=page;
+ modal.querySelector('.printGo').onclick=()=>{frame.contentWindow.focus();frame.contentWindow.print();};
+ const close=()=>{modal.remove();root.querySelector('.staffPrintButton').focus();};
+ modal.querySelector('.printClose').onclick=close;
+ modal.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+ modal.querySelector('.printClose').focus();
+}
+
 function renderStaff(s,root){
  const $=field=>root.querySelector('[data-field="'+field+'"]');
  $('affiliation').textContent='';$('affiliation').hidden=true;
