@@ -78,18 +78,23 @@ h1{font-size:25px}
 .card .conversionLabel{font-size:calc(13px + 2pt)}
 .card .conversion strong{font-size:calc(22px + 2pt)}
 .card .conversionUnit{font-size:calc(22px + 5pt)}
+.staffReport>summary.identity{cursor:pointer;list-style:none;flex-wrap:nowrap}
+.staffReport>summary.identity::-webkit-details-marker{display:none}
+.staffReport>summary.identity::after{content:'＋';font-size:24px;flex:none;color:var(--navy)}
+.staffReport[open]>summary.identity::after{content:'−'}
+.staffReport:not([open])>summary.identity{margin-bottom:0}
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
 
 <label>対象月<select id="month"></select></label></section>
 <div id="status" class="status" role="status" aria-live="polite">日報を読み込んでいます…</div><div id="notice" class="notice" hidden></div><div id="empty" hidden>掲載対象のスタッフはいません。</div>
-<div id="memberCount" class="memberCount"></div><div id="content"></div><template id="staffTemplate"><article class="staffReport"><section class="identity"><div><p data-field="affiliation"></p><h2 data-field="name"></h2></div></section>
+<div id="memberCount" class="memberCount"></div><div id="content"></div><template id="staffTemplate"><details class="staffReport"><summary class="identity"><div><p data-field="affiliation"></p><h2 data-field="name"></h2></div></summary>
 <section data-field="assessment" class="assessment" aria-label="確認事項"></section><div data-field="cards" class="cards"></div>
 
 
 
-</article></template>
+</details></template>
 </main>
 <script src="design.js"></script><script>
 let data=null;let design={}, connection={};
@@ -105,11 +110,21 @@ function card(title,value,unit,reference,label,diff,digits=0){
  const ratio=value!=null&&reference>0?value/reference:null;
  return '<article class="card"><h3>'+title+'</h3><div class="metric">'+fmt(value,digits)+'<span class="unit">'+unit+'</span>'+'</div><div class="bar" aria-hidden="true"><span style="width:'+(ratio==null?0:Math.max(0,Math.min(100,ratio*100)))+'%"></span></div><div class="meta"><span class="standard">'+label+' '+fmt(reference,label==='10口達成者水準'?0:digits)+unit+'</span><span class="delta">'+diff+'</span></div></article>';
 }
+const staffOpenState=new Map();
+function selectFunnelAttention(s){
+ const metrics=Object.fromEntries(Object.entries(s.metrics).map(([k,v])=>[k,{...v}]));
+ const p=metrics.presentations,c=metrics.closings;
+ if(p&&c&&(p.attention||c.attention)&&s.days>0&&p.value!=null&&c.value!=null&&p.goal>0&&c.goal>0){
+  const pRate=p.value/(p.goal/20*s.days),cRate=c.value/(c.goal/20*s.days);
+  p.attention=pRate<=cRate+1e-10;c.attention=!p.attention;
+ }
+ return {...s,metrics};
+}
 function render(){
  const members=data.staff.filter(s=>!s.excludeFromReport);
  $('content').replaceChildren();$('empty').hidden=members.length>0;
  $('memberCount').textContent=members.length?'掲載スタッフ '+members.length+'名':'';
- members.forEach(s=>{const root=$('staffTemplate').content.firstElementChild.cloneNode(true);$('content').appendChild(root);renderStaff(s,root);});
+ members.forEach(s=>{const root=$('staffTemplate').content.firstElementChild.cloneNode(true);$('content').appendChild(root);renderStaff(selectFunnelAttention(s),root);const identity=JSON.stringify([s.branch,s.name]);root.open=staffOpenState.get(identity)===true;root.addEventListener('toggle',()=>staffOpenState.set(identity,root.open));});
 }
 function renderStaff(s,root){
  const $=field=>root.querySelector('[data-field="'+field+'"]');
