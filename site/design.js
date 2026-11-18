@@ -45,6 +45,8 @@ function applyDesign(){
    if(design['label_'+key]&&!['dailyHours','visits','contracts','units'].includes(key))card.querySelector('h3').textContent=design['label_'+key];
    (place==='details'?inner:container).append(card);
   });
+  const flow=staff.querySelector('[data-field="transitionFlow"]');
+  if(flow)container.insertBefore(flow,container.querySelector('[data-metric="presentations"]'));
   staff.querySelectorAll('.reportDetails').forEach(x=>x.remove());
   if(inner.children.length){
    const identity=staff.querySelector('h2').textContent;
