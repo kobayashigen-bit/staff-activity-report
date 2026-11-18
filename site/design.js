@@ -1,6 +1,6 @@
 const reportDetailsState=new Map();
 function applyDesign(){
- const keys=['reporting','dailyHours','visits','approaches','presentations','closings','combined','units','totalHours'];
+ const keys=['reporting','dailyHours','visits','approaches','presentations','closings','contracts','units'];
  const n=(k,fallback)=>Number.isFinite(Number(design[k]))?Math.max(0,Math.min(100,Number(design[k]))):fallback;
  const color=(k,fallback)=>/^#[0-9a-f]{6}$/i.test(design[k]||'')?design[k]:fallback;
  const size=(selector,key,fallback)=>`${selector}{font-size:${n(key,fallback)}pt!important}`;
@@ -23,14 +23,14 @@ function applyDesign(){
   const container=staff.querySelector('[data-field="cards"]');
   const cards=[...staff.querySelectorAll('.card')];
   cards.forEach((card,i)=>{if(!card.dataset.metric)card.dataset.metric=keys[i];});
-  cards.sort((a,b)=>n('order_'+a.dataset.metric,keys.indexOf(a.dataset.metric)+1)-n('order_'+b.dataset.metric,keys.indexOf(b.dataset.metric)+1)||keys.indexOf(a.dataset.metric)-keys.indexOf(b.dataset.metric));
+  cards.sort((a,b)=>keys.indexOf(a.dataset.metric)-keys.indexOf(b.dataset.metric));
   const details=document.createElement('details');details.className='reportDetails';
   const summary=document.createElement('summary');summary.textContent=design.detailsLabel||'詳細を見る';details.append(summary);
   const inner=document.createElement('div');inner.className='cards';details.append(inner);
   cards.forEach(card=>{
-   const key=card.dataset.metric,place=design['placement_'+key]||(design['show_'+key]===false?'hidden':'main');
+   const key=card.dataset.metric,place='main';
    card.hidden=place==='hidden';
-   if(design['label_'+key])card.querySelector('h3').textContent=design['label_'+key];
+   if(design['label_'+key]&&!['dailyHours','visits','contracts','units'].includes(key))card.querySelector('h3').textContent=design['label_'+key];
    (place==='details'?inner:container).append(card);
   });
   staff.querySelectorAll('.reportDetails').forEach(x=>x.remove());
