@@ -118,6 +118,16 @@ h1{font-size:25px}
 @media(max-width:600px){.flowStage{font-size:11px}.flowLink b{font-size:18px}.flowLink small{font-size:10px}.transitionFlow{padding:10px 5px;gap:2px}}
 .flowActual{display:block;margin-top:6px;font-size:16px;color:var(--blue);white-space:nowrap}
 @media(max-width:600px){.transitionFlow{gap:1px;padding:10px 3px}.flowStage{font-size:10px}.flowActual{font-size:11px}.flowLink b{font-size:12px}.flowLink>span{font-size:24px}.flowLink small{font-size:9px}}
+.flowStage{font-size:calc(14px + 2pt)}
+.visualProgress{margin:9px 0;color:var(--navy)}
+.progressHeading{display:flex;align-items:baseline;justify-content:space-between;gap:5px;font-size:12px}
+.progressHeading b{font-size:21px;color:var(--blue)}
+.progressTrack{height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin:4px 0 5px}
+.progressTrack>span{display:block;height:100%;background:var(--blue);border-radius:6px}
+.achieved .progressTrack>span{background:#258466}
+.achieved .progressHeading b{color:#258466}
+.progressTarget{font-size:12px;color:var(--muted)}
+@media(max-width:600px){.flowStage{font-size:calc(10px + 2pt)}.visualProgress{margin:5px 0}.progressHeading{font-size:11px}.progressHeading b{font-size:18px}.progressTrack{height:8px}.progressTarget{font-size:11px}}
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
@@ -200,12 +210,13 @@ function renderStaff(s,root){
  const box=(key,title,body)=>'<article data-metric="'+key+'" class="card'+(top===key?' attention':'')+'">'+(s.metrics[key]?.attention?'<span class="attentionLabel">要確認</span>':'')+'<h3>'+title+'</h3>'+body+'</article>';
  let html=box('reporting','報告日数（月累計）',valueHtml(s.reportedDays,'日')+'<p class="reportReminder">出勤日数分の日報が入力されているかご確認ください</p>');
  const daily=s.metrics.dailyHours;
- html+=box('dailyHours','活動時間',valueHtml(daily.value,'時間',1)+'<div class="compactMeta">1活動日あたり<br>10口達成者水準 5時間<br>当月累計 '+fmt(s.minutes==null?null:s.minutes/60,1)+'時間</div>'+breakdown('minutes',true));
+ html+=box('dailyHours','活動時間（1活動日あたり）',valueHtml(daily.value,'時間',1)+'<div class="compactMeta">10口達成者水準 5時間<br>当月累計 '+fmt(s.minutes==null?null:s.minutes/60,1)+'時間</div>'+breakdown('minutes',true));
  ['visits','approaches','presentations','closings'].forEach(key=>{
   const m=s.metrics[key],standard=m.goal/20*s.days,progress=m.value==null||!s.days?null:m.value/standard*100;
   let body=key==='visits'?'<div class="subMetricLabel">訪問件数</div>':'';
   body+=valueHtml(m.value,'件');
-  body+='<div class="compactMeta">進捗率：'+fmt(progress)+'％<br>10口達成者水準 '+fmt(standard)+'件</div>';
+  const barValue=progress==null?0:Math.max(0,Math.min(100,progress));
+  body+='<div class="visualProgress'+(progress!=null&&progress>=100?' achieved':'')+'"><div class="progressHeading"><span>進捗率</span><b>'+fmt(progress)+'％</b></div><div class="progressTrack" role="img" aria-label="進捗率 '+fmt(progress)+'パーセント"><span style="width:'+barValue+'%"></span></div><div class="progressTarget">10口達成者水準 '+fmt(standard)+'件</div></div>';
   if(key==='visits')body+='<div class="subMetricLabel">声掛け数</div>'+valueHtml(s.calls,'件');
   if(key!=='visits')body+=breakdown(key);
   html+=box(key,key==='visits'?'訪問件数・声掛け数':names[key],body);
