@@ -137,7 +137,7 @@ h1{font-size:25px}
 .transitionHeading{grid-column:1/-1;text-align:left;font-size:16px;font-weight:700;line-height:1.5;margin:0 0 12px;padding-left:4px}
 @media(max-width:600px){.transitionHeading{font-size:14px;margin-bottom:10px}}
 .staffReport .cards>.card.contractAttention{border:2px solid #e5a25d}
-.staffPrintTools{display:flex;justify-content:flex-end;margin:0 0 12px}.staffPrintButton{font-size:14px}
+.staffPrintTools{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}.staffPrintButton{font-size:14px;font-weight:700;padding:6px 14px;min-height:44px}.staffPrintHint{font-size:13px;color:var(--navy);white-space:nowrap}.staffReport>summary.identity{flex-wrap:wrap}.staffReport>summary.identity>div{flex:1;min-width:0}@media(max-width:600px){.staffPrintTools{order:3;flex-basis:100%;margin-left:0}.staffReport>summary.identity::after{order:2}}@media print{.staffPrintTools{display:none!important}}
 .printModal{position:fixed;inset:0;z-index:9999;background:#e5e7eb;overflow:auto;padding-top:78px}
 .printToolbar{position:fixed;inset:0 0 auto;min-height:68px;z-index:10000;display:flex;align-items:center;justify-content:center;gap:12px;padding:10px;background:white;box-shadow:0 2px 8px #0002;flex-wrap:wrap}
 .printToolbar strong{font-size:15px}.printToolbar span{font-size:12px}.printToolbar button{font-size:14px}
@@ -149,8 +149,8 @@ h1{font-size:25px}
 
 <label>対象月<select id="month"></select></label></section>
 <div id="status" class="status" role="status" aria-live="polite">日報を読み込んでいます…</div><div id="notice" class="notice" hidden></div><div id="empty" hidden>掲載対象のスタッフはいません。</div>
-<div id="memberCount" class="memberCount"></div><div id="content"></div><template id="staffTemplate"><details class="staffReport"><summary class="identity"><div><p data-field="affiliation"></p><h2 data-field="name"></h2></div></summary>
-<div class="staffPrintTools"><button type="button" class="staffPrintButton">このスタッフを印刷</button></div><section data-field="assessment" class="assessment" aria-label="確認事項"></section><div data-field="cards" class="cards"></div>
+<div id="memberCount" class="memberCount"></div><div id="content"></div><template id="staffTemplate"><details class="staffReport"><summary class="identity"><div><p data-field="affiliation"></p><h2 data-field="name"></h2></div><span class="staffPrintTools"><button type="button" class="staffPrintButton">印刷</button><span class="staffPrintHint">← 印刷はこちらから</span></span></summary>
+<section data-field="assessment" class="assessment" aria-label="確認事項"></section><div data-field="cards" class="cards"></div>
 
 
 
@@ -183,8 +183,8 @@ function selectFunnelAttention(s){
 function render(){
  const members=data.staff.filter(s=>!s.excludeFromReport);
  $('content').replaceChildren();$('empty').hidden=members.length>0;
- $('memberCount').textContent=members.length?'掲載スタッフ '+members.length+'名':'';
- members.forEach(s=>{const root=$('staffTemplate').content.firstElementChild.cloneNode(true);$('content').appendChild(root);renderStaff(selectFunnelAttention(s),root);root.querySelector('.staffPrintButton').addEventListener('click',()=>printStaff(root));const identity=JSON.stringify([s.branch,s.name]);root.open=staffOpenState.get(identity)===true;root.addEventListener('toggle',()=>staffOpenState.set(identity,root.open));});
+ $('memberCount').textContent=members.length?'レポート対象者 '+members.length+'名':'';
+ members.forEach(s=>{const root=$('staffTemplate').content.firstElementChild.cloneNode(true);$('content').appendChild(root);renderStaff(selectFunnelAttention(s),root);root.querySelector('.staffPrintButton').addEventListener('click',event=>{event.preventDefault();event.stopPropagation();printStaff(root);});const identity=JSON.stringify([s.branch,s.name]);root.open=staffOpenState.get(identity)===true;root.addEventListener('toggle',()=>staffOpenState.set(identity,root.open));});
 }
 function staffSituations(s,report){
  const m=s.metrics||{},num=v=>typeof v==='number'&&Number.isFinite(v),value=k=>m[k]?.value;
