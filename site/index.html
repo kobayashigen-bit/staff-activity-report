@@ -111,11 +111,13 @@ h1{font-size:25px}
  .staffReport .cards>.card[data-metric="visits"] .compactMeta{margin-bottom:5px}
 
 }
-.transitionFlow{grid-column:1/-1;display:grid;grid-template-columns:1fr .8fr 1fr .8fr 1fr;align-items:center;gap:4px;background:#e6effc;border:1px solid #b7cceb;border-radius:10px;padding:12px 8px;color:var(--navy)}
+.transitionFlow{grid-column:1/-1;display:grid;grid-template-columns:1fr .65fr 1fr .65fr 1fr .65fr 1fr;align-items:center;gap:4px;background:#e6effc;border:1px solid #b7cceb;border-radius:10px;padding:12px 8px;color:var(--navy)}
 .flowStage{text-align:center;font-size:14px;font-weight:700;overflow-wrap:anywhere}
 .flowLink{display:flex;flex-direction:column;align-items:center;line-height:1.15}
 .flowLink b{font-size:22px;color:var(--blue)}.flowLink>span{font-size:32px;line-height:.8}.flowLink small{font-size:11px;margin-top:4px}
 @media(max-width:600px){.flowStage{font-size:11px}.flowLink b{font-size:18px}.flowLink small{font-size:10px}.transitionFlow{padding:10px 5px;gap:2px}}
+.flowActual{display:block;margin-top:6px;font-size:16px;color:var(--blue);white-space:nowrap}
+@media(max-width:600px){.transitionFlow{gap:1px;padding:10px 3px}.flowStage{font-size:10px}.flowActual{font-size:11px}.flowLink b{font-size:12px}.flowLink>span{font-size:24px}.flowLink small{font-size:9px}}
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
@@ -205,17 +207,17 @@ function renderStaff(s,root){
   body+=valueHtml(m.value,'件');
   body+='<div class="compactMeta">進捗率：'+fmt(progress)+'％<br>10口達成者水準 '+fmt(standard)+'件</div>';
   if(key==='visits')body+='<div class="subMetricLabel">声掛け数</div>'+valueHtml(s.calls,'件');
-  if(key==='presentations'||key==='closings'){
-   const rate=key==='presentations'?s.presentationRate:s.closingRate;
-   body+='<div class="compactMeta">'+(key==='presentations'?'プレゼン率':'クロージング率')+' '+fmt(rate==null?null:rate*100)+'％</div>';
-  }
   if(key!=='visits')body+=breakdown(key);
   html+=box(key,key==='visits'?'訪問件数・声掛け数':names[key],body);
  });
  html+=box('contracts','契約件数',valueHtml(s.contracts,'件')+breakdown('contracts'));
  html+=box('units','口数',valueHtml(s.units,'口')+breakdown('units'));
  const rateText=rate=>fmt(rate==null?null:rate*100)+'％';
- const flow='<div class="transitionFlow" data-field="transitionFlow" aria-label="営業活動の移行率"><span class="flowStage">アプローチ</span><span class="flowLink"><b>'+rateText(s.presentationRate)+'</b><span aria-hidden="true">⟶</span><small>移行率</small></span><span class="flowStage">プレゼン</span><span class="flowLink"><b>'+rateText(s.closingRate)+'</b><span aria-hidden="true">⟶</span><small>移行率</small></span><span class="flowStage">クロージング</span></div>';
+ const stages=[['アプローチ',s.metrics.approaches.value],['プレゼン',s.metrics.presentations.value],['クロージング',s.metrics.closings.value],['契約',s.contracts]];
+ const closeCount=s.metrics.closings.value;
+ const rates=[s.presentationRate,s.closingRate,closeCount>0&&s.contracts!=null?s.contracts/closeCount:null];
+ const flow='<div class="transitionFlow" data-field="transitionFlow" aria-label="営業活動の実績と移行率">'+stages.map(([label,value],i)=>'<span class="flowStage">'+label+'<b class="flowActual">（'+fmt(value)+'件）</b></span>'+(i<3?'<span class="flowLink"><b>'+rateText(rates[i])+'</b><span aria-hidden="true">⟶</span><small>移行率</small></span>':'')).join('')+'</div>';
+
  $('cards').innerHTML=html;
  $('cards').querySelector('[data-metric="presentations"]').insertAdjacentHTML('beforebegin',flow);
 
