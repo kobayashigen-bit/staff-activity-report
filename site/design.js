@@ -44,7 +44,7 @@ function applyDesign(){
    card.hidden=place==='hidden';
    if(design['label_'+key]&&!['dailyHours','visits','contracts','units'].includes(key))card.querySelector('h3').textContent=design['label_'+key];
    const heading=card.querySelector('h3');
-   if(key==='dailyHours')heading.textContent='募集活動時間（月累計）　※会議、移動時間などは除く';
+   if(key==='dailyHours')heading.innerHTML='募集活動時間（月累計）<span class="activityExclusion">※会議、移動時間などは除く</span>';
    else if(!heading.textContent.includes('月累計'))heading.textContent+='（月累計）';
    (place==='details'?inner:container).append(card);
   });
