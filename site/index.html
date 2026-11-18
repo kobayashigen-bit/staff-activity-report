@@ -134,6 +134,8 @@ h1{font-size:25px}
 @media(max-width:600px){.progressHeading{font-size:calc(11px + 3pt)}.progressHeading b{font-size:calc(18px + 3pt)}.progressTarget{font-size:calc(11px + 3pt)}}
 .phenomenonHeading{display:block;font-size:calc(16px + 3pt);font-weight:700;color:var(--navy);line-height:1.5}
 .activityExclusion{display:block;font-size:.85em;font-weight:400;margin-top:4px;line-height:1.5}
+.transitionHeading{grid-column:1/-1;text-align:left;font-size:16px;font-weight:700;line-height:1.5;margin:0 0 12px;padding-left:4px}
+@media(max-width:600px){.transitionHeading{font-size:14px;margin-bottom:10px}}
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
@@ -233,7 +235,7 @@ function renderStaff(s,root){
  const stages=[['アプローチ',s.metrics.approaches.value],['プレゼン',s.metrics.presentations.value],['クロージング',s.metrics.closings.value],['契約',s.contracts]];
  const closeCount=s.metrics.closings.value;
  const rates=[s.presentationRate,s.closingRate,closeCount>0&&s.contracts!=null?s.contracts/closeCount:null];
- const flow='<div class="transitionFlow" data-field="transitionFlow" aria-label="営業活動の実績と移行率">'+stages.map(([label,value],i)=>'<span class="flowStage">'+label+'<b class="flowActual">（'+fmt(value)+'件）</b></span>'+(i<3?'<span class="flowLink"><b>'+rateText(rates[i])+'</b><span aria-hidden="true">⟶</span><small>移行率</small></span>':'')).join('')+'</div>';
+ const flow='<div class="transitionFlow" data-field="transitionFlow" aria-label="営業活動の実績と移行率"><div class="transitionHeading">各指標への移行率</div>'+stages.map(([label,value],i)=>'<span class="flowStage">'+label+'<b class="flowActual">（'+fmt(value)+'件）</b></span>'+(i<3?'<span class="flowLink"><b>'+rateText(rates[i])+'</b><span aria-hidden="true">⟶</span><small>移行率</small></span>':'')).join('')+'</div>';
 
  $('cards').innerHTML=html;
  $('cards').querySelector('[data-metric="presentations"]').insertAdjacentHTML('beforebegin',flow);
