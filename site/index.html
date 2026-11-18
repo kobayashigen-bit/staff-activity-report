@@ -136,6 +136,7 @@ h1{font-size:25px}
 .activityExclusion{display:block;font-size:.85em;font-weight:400;margin-top:4px;line-height:1.5}
 .transitionHeading{grid-column:1/-1;text-align:left;font-size:16px;font-weight:700;line-height:1.5;margin:0 0 12px;padding-left:4px}
 @media(max-width:600px){.transitionHeading{font-size:14px;margin-bottom:10px}}
+.staffReport .cards>.card.contractAttention{border:2px solid #e5a25d}
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
@@ -200,9 +201,24 @@ function renderStaff(s,root){
  $('name').textContent=(s.branch.endsWith('支店')?s.branch:s.branch+'支店')+'/'+s.name;
 
  const names={reporting:'活動報告',dailyHours:'募集活動時間（移動、会議時間を除く）',visits:'訪問件数',approaches:'アプローチ数',presentations:'プレゼン数',closings:'クロージング数',combined:'見込み・アポ数'};
- const top=['dailyHours','visits','approaches','presentations','closings'].find(key=>s.metrics[key]&&s.metrics[key].attention)||null;
- const topMetric=top?s.metrics[top]:null;
  const situations=staffSituations(s,data);
+ const mentioned=new Set();
+ const related=[
+  ['訪問件数が不足している',['visits']],
+  ['アプローチの前にお断りされていることが多い',['approaches']],
+  ['プレゼンまで進めないことが多い',['presentations']],
+  ['クロージングをしていない/できないトークの流れになっている',['closings']],
+  ['クロージングのタイミング、文言、言い方に修正余地がある',['closings','contracts']],
+  ['見込み違いが発生している可能性がある',['combined']]
+ ];
+ related.forEach(([text,keys])=>{if(situations.includes(text))keys.forEach(k=>mentioned.add(k));});
+ const badgeFor=key=>{
+  const m=s.metrics[key],goal=m&&(key==='dailyHours'?m.goal:m.goal/20*s.days);
+  return mentioned.has(key)&&m&&m.value!=null&&goal>0&&m.value/goal<=.7+1e-10;
+ };
+ const top=['dailyHours','visits','approaches','presentations','closings'].find(badgeFor)||null;
+ const elapsed=data.reportUntil?.slice(0,7)===data.month?Number(data.reportUntil.slice(8)):0;
+ const contractAlert=typeof s.contracts==='number'&&Number.isFinite(s.contracts)&&(elapsed>=28?s.contracts<11:elapsed>=21?s.contracts<8:elapsed>=14?s.contracts<5:elapsed>=7?s.contracts<=2:false);
  $('assessment').innerHTML='<span class="phenomenonHeading">起きている可能性がある現象</span><ul class="situationList">'+situations.map(text=>'<li class="assessmentGap">'+esc(text)+'</li>').join('')+'</ul>';
  $('assessment').hidden=situations.length===0;
 
@@ -215,10 +231,10 @@ function renderStaff(s,root){
   }).join('')+'</div></details>';
  };
  const valueHtml=(value,unit,digits=0)=>'<div class="metric">'+fmt(value,digits)+'<span class="unit">'+unit+'</span></div>';
- const box=(key,title,body)=>'<article data-metric="'+key+'" class="card'+(top===key?' attention':'')+'">'+(s.metrics[key]?.attention?'<span class="attentionLabel">要確認</span>':'')+'<h3>'+title+'</h3>'+body+'</article>';
+ const box=(key,title,body)=>'<article data-metric="'+key+'" class="card'+(top===key?' attention':'')+(key==='contracts'&&contractAlert?' contractAttention':'')+'">'+(badgeFor(key)?'<span class="attentionLabel">要確認</span>':'')+'<h3>'+title+'</h3>'+body+'</article>';
  let html=box('reporting','報告日数（月累計）',valueHtml(s.reportedDays,'日')+'<p class="reportReminder">出勤日数分の日報が入力されているかご確認ください</p>');
  const daily=s.metrics.dailyHours;
- html+=box('dailyHours','募集活動時間',valueHtml(s.minutes==null?null:s.minutes/60,'時間',1)+'<div class="compactMeta">今月累計<br>1活動日あたり：'+fmt(daily.value,1)+'時間</div>'+breakdown('minutes',true));
+ html+=box('dailyHours','募集活動時間',valueHtml(s.minutes==null?null:s.minutes/60,'時間',1)+'<div class="compactMeta">1活動日あたり：'+fmt(daily.value,1)+'時間</div>'+breakdown('minutes',true));
  ['visits','approaches','presentations','closings'].forEach(key=>{
   const m=s.metrics[key],standard=m.goal/20*s.days,progress=m.value==null||!s.days?null:m.value/standard*100;
   let body=key==='visits'?'<div class="subMetricLabel">訪問件数</div>':'';
