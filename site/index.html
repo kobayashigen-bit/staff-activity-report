@@ -177,13 +177,13 @@ function renderStaff(s,root){
  const names={reporting:'活動報告',dailyHours:'募集活動時間（移動、会議時間を除く）',visits:'訪問件数',approaches:'アプローチ数',presentations:'プレゼン数',closings:'クロージング数',combined:'見込み・アポ数'};
  const top=['dailyHours','visits','approaches','presentations','closings'].find(key=>s.metrics[key]&&s.metrics[key].attention)||null;
  const topMetric=top?s.metrics[top]:null;
- const situations=staffSituations(s,data);
+ const situations=staffSituations(s,data).slice(0,1);
  $('assessment').innerHTML='<span class="assessmentBadge">状況の確認</span><ul class="situationList">'+situations.map(text=>'<li class="assessmentGap">'+esc(text)+'</li>').join('')+'</ul>';
  $('assessment').hidden=situations.length===0;
 
  const breakdown=(key,time=false)=>{
   const groups=[['ブロック',[0]],['自社イベント',[2]],['店頭イベント',[1]],['施行後訪問',[3]],['その他',[4,5]]];
-  return '<details class="channelDetails"><summary>チャネル別を見る</summary><div class="channelRows">'+groups.map(([label,indices])=>{
+  return '<details class="channelDetails"><summary>詳細</summary><div class="channelRows">'+groups.map(([label,indices])=>{
    const values=indices.map(i=>s.channels?.[i]?.[key]);
    const value=values.every(v=>typeof v==='number'&&Number.isFinite(v))?values.reduce((a,b)=>a+b,0):null;
    return '<div><span>'+label+'</span><b>'+fmt(value==null?null:time?value/60:value,time?1:0)+(time?'時間':key==='units'?'口':'件')+'</b></div>';
