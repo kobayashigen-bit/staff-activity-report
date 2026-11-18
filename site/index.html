@@ -111,6 +111,11 @@ h1{font-size:25px}
  .staffReport .cards>.card[data-metric="visits"] .compactMeta{margin-bottom:5px}
 
 }
+.transitionFlow{grid-column:1/-1;display:grid;grid-template-columns:1fr .8fr 1fr .8fr 1fr;align-items:center;gap:4px;background:#e6effc;border:1px solid #b7cceb;border-radius:10px;padding:12px 8px;color:var(--navy)}
+.flowStage{text-align:center;font-size:14px;font-weight:700;overflow-wrap:anywhere}
+.flowLink{display:flex;flex-direction:column;align-items:center;line-height:1.15}
+.flowLink b{font-size:22px;color:var(--blue)}.flowLink>span{font-size:32px;line-height:.8}.flowLink small{font-size:11px;margin-top:4px}
+@media(max-width:600px){.flowStage{font-size:11px}.flowLink b{font-size:18px}.flowLink small{font-size:10px}.transitionFlow{padding:10px 5px;gap:2px}}
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
@@ -209,7 +214,10 @@ function renderStaff(s,root){
  });
  html+=box('contracts','契約件数',valueHtml(s.contracts,'件')+breakdown('contracts'));
  html+=box('units','口数',valueHtml(s.units,'口')+breakdown('units'));
+ const rateText=rate=>fmt(rate==null?null:rate*100)+'％';
+ const flow='<div class="transitionFlow" data-field="transitionFlow" aria-label="営業活動の移行率"><span class="flowStage">アプローチ</span><span class="flowLink"><b>'+rateText(s.presentationRate)+'</b><span aria-hidden="true">⟶</span><small>移行率</small></span><span class="flowStage">プレゼン</span><span class="flowLink"><b>'+rateText(s.closingRate)+'</b><span aria-hidden="true">⟶</span><small>移行率</small></span><span class="flowStage">クロージング</span></div>';
  $('cards').innerHTML=html;
+ $('cards').querySelector('[data-metric="presentations"]').insertAdjacentHTML('beforebegin',flow);
 
 }
 
