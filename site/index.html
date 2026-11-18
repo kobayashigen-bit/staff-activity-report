@@ -101,7 +101,15 @@ h1{font-size:25px}
  .staffReport .cards>.card .metric{font-size:22px!important;gap:3px}
  .staffReport .cards>.card .unit{font-size:12px!important}
  .staffReport .cards>.card .reportReminder{font-size:11px!important}
- .compactMeta,.subMetricLabel,.card .channelDetails summary,.channelRows>div{font-size:11px}
+ .compactMeta,.subMetricLabel,.card .channelDetails summary,.channelRows>div{font-size:10px;line-height:1.4}
+ .staffReport .cards>.card .attentionLabel{float:right;font-size:9px!important;padding:0 3px;margin:0 0 2px 3px}
+ .card .channelDetails{margin-top:5px;padding-top:4px}
+ .compactMeta{margin-top:3px}.subMetricLabel{margin-top:3px}
+ .staffReport .cards>.card .metric{line-height:1.15}
+ .staffReport .cards>.card[data-metric="visits"] .metric{display:inline-flex;margin-left:4px}
+ .staffReport .cards>.card[data-metric="visits"] .subMetricLabel{display:inline}
+ .staffReport .cards>.card[data-metric="visits"] .compactMeta{margin-bottom:5px}
+
 }
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
@@ -196,8 +204,7 @@ function renderStaff(s,root){
    const rate=key==='presentations'?s.presentationRate:s.closingRate;
    body+='<div class="compactMeta">'+(key==='presentations'?'プレゼン率':'クロージング率')+' '+fmt(rate==null?null:rate*100)+'％</div>';
   }
-  body+=breakdown(key);
-  if(key==='visits')body+='<details class="channelDetails"><summary>声掛け数の内訳</summary><div class="compactMeta">店頭イベント '+fmt(s.calls)+'件</div></details>';
+  if(key!=='visits')body+=breakdown(key);
   html+=box(key,key==='visits'?'訪問件数・声掛け数':names[key],body);
  });
  html+=box('contracts','契約件数',valueHtml(s.contracts,'件')+breakdown('contracts'));
