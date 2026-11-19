@@ -149,7 +149,7 @@ h1{font-size:25px}
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
 
-<label>対象月<select id="month"></select></label><label>支店で絞り込み<select id="branch"><option value="">すべての支店</option></select></label><label>並び順<select id="sort"><option value="branch">支店順</option><option value="name">氏名順</option></select></label></section>
+<label>対象月<select id="month"></select></label><label>表示する支店<select id="branch"><option value="">すべての支店</option></select></label></section>
 <details class="printSettings"><summary>印刷する支店・スタッフを選択</summary><p>支店にチェックを入れると所属スタッフ全員を選択します。個別に選択・解除することもできます。</p><div class="printActions"><button id="selectAll" type="button">全員を選択</button><button id="clearSelection" type="button">選択を解除</button><button id="printSelected" type="button" disabled>選択したスタッフを印刷</button><span id="selectedCount" role="status" aria-live="polite">0名選択中</span></div><div id="printChoices"></div></details>
 <div id="status" class="status" role="status" aria-live="polite">日報を読み込んでいます…</div><div id="notice" class="notice" hidden></div><div id="empty" hidden>掲載対象のスタッフはいません。</div>
 <div id="memberCount" class="memberCount"></div><div id="content"></div><template id="staffTemplate"><details class="staffReport"><summary class="identity"><div><p data-field="affiliation"></p><h2 data-field="name"></h2></div></summary>
@@ -177,7 +177,7 @@ const staffOpenState=new Map();
 const selectedStaff=new Set();
 const staffKey=s=>JSON.stringify([s.branch,s.name]);
 const compareText=(a,b)=>String(a||'').localeCompare(String(b||''),'ja',{numeric:true});
-function reportMembers(){return data.staff.filter(s=>!s.excludeFromReport).sort((a,b)=>$('sort').value==='name'?compareText(a.name,b.name)||compareText(a.branch,b.branch):compareText(a.branch,b.branch)||compareText(a.name,b.name));}
+function reportMembers(){return data.staff.filter(s=>!s.excludeFromReport).sort((a,b)=>compareText(a.branch,b.branch)||compareText(a.name,b.name));}
 function updatePrintSelection(){
  const members=reportMembers(),selected=members.filter(s=>selectedStaff.has(staffKey(s)));
  $('selectedCount').textContent=selected.length+'名選択中';$('printSelected').disabled=!selected.length;
@@ -227,6 +227,13 @@ function staffSituations(s,report){
  return result;
 }
 
+function printPeriod(report){
+ const month=/^(\d{4})-(\d{2})$/.exec(report.month||'');
+ const until=/^(\d{4})-(\d{2})-(\d{2})/.exec(report.reportUntil||'');
+ if(!month||!until)return '集計期間未取得';
+ const date=parts=>Number(parts[1])+'/'+Number(parts[2])+'/'+Number(parts[3]);
+ return Number(month[1])+'/'+Number(month[2])+'/1～'+date(until);
+}
 function printSelectedStaff(){
  const members=reportMembers().filter(s=>selectedStaff.has(staffKey(s)));
  if(!members.length)return;
@@ -272,7 +279,7 @@ function printSelectedStaff(){
  .flowLink b{font-size:12pt!important}.flowLink>span{font-size:20pt!important}.flowLink small{font-size:8pt!important}
  @media screen{body{padding:8mm!important;background:#e5e7eb!important}}
  `;
- const page='<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>'+esc(document.title)+' 印刷</title><style>'+style+'\n'+printCSS+'</style></head><body>'+clones.map(clone=>'<div class="printPage"><div class="printTitle">'+esc(document.title)+' / '+esc(data.month)+'</div>'+clone.outerHTML+'</div>').join('')+'</body></html>';
+ const page='<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>'+esc(document.title)+' 印刷</title><style>'+style+'\n'+printCSS+'</style></head><body>'+clones.map(clone=>'<div class="printPage"><div class="printTitle">'+esc(document.title)+' / '+esc(printPeriod(data))+'</div>'+clone.outerHTML+'</div>').join('')+'</body></html>';
  const modal=document.createElement('div');modal.className='printModal';modal.setAttribute('role','dialog');modal.setAttribute('aria-label','スタッフ別 A4印刷プレビュー');modal.setAttribute('aria-modal','true');
  modal.innerHTML='<div class="printToolbar"><strong>A4縦・'+members.length+'名分の印刷プレビュー</strong><span>チャネル別の内訳も印刷します（複数ページ）</span><button class="printGo">印刷する</button><button class="printClose">閉じる</button></div><iframe title="A4印刷イメージ" class="printFrame"></iframe>';
  document.body.append(modal);const frame=modal.querySelector('iframe');frame.srcdoc=page;
@@ -376,7 +383,6 @@ async function boot(){
 }
 $('month').onchange=()=>{selectedStaff.clear();refresh();};
 $('branch').onchange=()=>{render();applyDesign();};
-$('sort').onchange=()=>{render();renderPrintChoices();applyDesign();};
 $('selectAll').onclick=()=>{reportMembers().forEach(s=>selectedStaff.add(staffKey(s)));updatePrintSelection();};
 $('clearSelection').onclick=()=>{selectedStaff.clear();updatePrintSelection();};
 $('printSelected').onclick=printSelectedStaff;
