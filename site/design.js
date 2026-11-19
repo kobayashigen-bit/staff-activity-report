@@ -59,7 +59,32 @@ function applyDesign(scope=document){
   }
   staff.querySelector('[data-field="assessment"]').hidden=design.showAssessment===false||!staff.querySelector('.assessmentGap');
  });
+ if(scope===document)requestAnimationFrame(syncClosedCardHeights);
  scope.querySelectorAll('.reportReminder').forEach(x=>x.textContent=design.reminder??'出勤日数分の日報が入力されているかご確認ください');
  scope.querySelectorAll('.attentionLabel,.assessmentBadge').forEach(x=>x.textContent=design.badge||'要確認');
  scope.querySelectorAll('.standard').forEach(x=>{if(x.textContent.startsWith('10口達成者水準'))x.textContent=x.textContent.replace('10口達成者水準',design.standard||'10口達成者水準');});
 }
+
+let cardHeightFrame;
+function syncClosedCardHeights(){
+ document.querySelectorAll('.staffReport[open]').forEach(staff=>{
+  const cards=[...staff.querySelectorAll('.card')].filter(c=>!['contracts','units'].includes(c.dataset.metric));
+  let maximum=0;
+  cards.forEach(card=>{
+   const clone=card.cloneNode(true);
+   clone.querySelectorAll('details').forEach(x=>x.open=false);
+   clone.style.cssText='position:fixed;visibility:hidden;pointer-events:none;left:-10000px;top:0;width:'+card.getBoundingClientRect().width+'px;height:auto!important;min-height:0!important;aspect-ratio:auto!important';
+   card.parentElement.append(clone);
+   maximum=Math.max(maximum,Math.ceil(clone.getBoundingClientRect().height));clone.remove();
+  });
+  if(maximum)staff.style.setProperty('--closed-card-height',maximum+'px');
+  cards.forEach(card=>{
+   const rows=card.querySelector('.channelRows');
+   if(rows&&card.querySelector('details[open]'))card.style.setProperty('--detail-height',rows.getBoundingClientRect().height+'px');
+  });
+ });
+}
+document.addEventListener('toggle',event=>{
+ if(event.target.matches('.staffReport,.channelDetails')){cancelAnimationFrame(cardHeightFrame);cardHeightFrame=requestAnimationFrame(syncClosedCardHeights);}
+},true);
+window.addEventListener('resize',()=>{cancelAnimationFrame(cardHeightFrame);cardHeightFrame=requestAnimationFrame(syncClosedCardHeights);});
