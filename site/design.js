@@ -44,12 +44,12 @@ function applyDesign(){
    card.hidden=place==='hidden';
    if(design['label_'+key]&&!['dailyHours','visits','contracts','units'].includes(key))card.querySelector('h3').textContent=design['label_'+key];
    const heading=card.querySelector('h3');
-   if(key==='dailyHours')heading.innerHTML='募集活動時間（月累計）<span class="activityExclusion">※会議、移動時間などは除く</span>';
+   if(key==='dailyHours')heading.innerHTML='募集活動時間（1活動日あたり）<span class="activityExclusion">※会議、移動時間などは除く</span>';
    else if(!heading.textContent.includes('月累計'))heading.textContent+='（月累計）';
    (place==='details'?inner:container).append(card);
   });
   const flow=staff.querySelector('[data-field="transitionFlow"]');
-  if(flow)container.insertBefore(flow,container.querySelector('[data-metric="presentations"]'));
+  if(flow)staff.querySelector('summary.identity').insertAdjacentElement('afterend',flow);
   staff.querySelectorAll('.reportDetails').forEach(x=>x.remove());
   if(inner.children.length){
    const identity=staff.querySelector('h2').textContent;
