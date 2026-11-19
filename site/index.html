@@ -153,6 +153,8 @@ h1{font-size:25px}
 .printSettings{padding:12px}
 .printSettings summary{font-size:calc(12px + 5pt)}
 .printSettings p{font-size:calc(14px + 1pt)}
+
+.staffReport .cards>.card[data-metric="closings"]{grid-column:1}.staffReport .cards>.card[data-metric="combined"]{grid-column:2}
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
@@ -231,7 +233,7 @@ function staffSituations(s,report){
   [num(s.contracts)&&num(c)&&c>0&&s.contracts/c<=.1+1e-10,'クロージングのタイミング、文言、言い方に修正余地がある']
  ];
  const first=conditions.find(([matches])=>matches),result=first?[first[1]]:[];
- if(num(combined)&&num(c)&&combined>c)result.push('見込みランクを読み違えている可能性がある');
+ if(num(combined)&&num(c)&&combined>c)result.push('見込みランクを読み違えている');
  return result;
 }
 
@@ -281,6 +283,7 @@ function printSelectedStaff(){
  .subMetricLabel{font-size:10pt!important;display:inline!important}
  .card[data-metric="visits"] .metric{display:inline-flex!important;font-size:20pt!important}
  .card .attentionLabel{float:right;font-size:9pt!important;margin:0!important;padding:0 1mm!important}
+ .staffReport .cards>.card[data-metric="presentations"]{margin-right:50%!important}
  .channelDetails{display:block!important;margin-top:2mm!important;padding-top:1mm!important}.channelDetails>summary{display:none!important}.channelRows>div{font-size:10pt!important;padding:1mm 0!important}.staffReport .cards{display:block!important}.staffReport .cards>.card{display:inline-block!important;vertical-align:top!important;width:calc(50% - 2mm)!important;margin:0 1mm 3mm!important;overflow:visible!important;break-inside:avoid!important}.staffReport>.transitionFlow{margin:0 0 3mm!important}
  .transitionFlow{padding:2mm!important;gap:1mm!important;break-inside:avoid}
  .transitionHeading{font-size:11pt!important;margin-bottom:1mm!important}
@@ -313,7 +316,7 @@ function renderStaff(s,root){
   ['プレゼンまで進めないことが多い',['presentations']],
   ['クロージングをしていない/できないトークの流れになっている',['closings']],
   ['クロージングのタイミング、文言、言い方に修正余地がある',['closings','contracts']],
-  ['見込みランクを読み違えている可能性がある',['combined']]
+  ['見込みランクを読み違えている',['combined']]
  ];
  related.forEach(([text,keys])=>{if(situations.includes(text))keys.forEach(k=>mentioned.add(k));});
  const badgeFor=key=>{
@@ -359,7 +362,7 @@ function renderStaff(s,root){
  const flow='<div class="transitionFlow" data-field="transitionFlow" aria-label="営業活動の実績と移行率"><div class="transitionHeading">各指標への移行率</div>'+stages.map(([label,value],i)=>'<span class="flowStage">'+label+'<b class="flowActual">（'+fmt(value)+'件）</b></span>'+(i<3?'<span class="flowLink"><b>'+rateText(rates[i])+'</b><span aria-hidden="true">⟶</span><small>移行率</small></span>':'')).join('')+'</div>';
 
  $('cards').innerHTML=html;
- $('cards').appendChild($('cards').querySelector('[data-metric="combined"]'));
+ $('cards').querySelector('[data-metric="closings"]').insertAdjacentElement('afterend',$('cards').querySelector('[data-metric="combined"]'));
  $('cards').querySelector('[data-metric="visits"]').classList.toggle('noCalls',s.calls===0);
  root.querySelector('summary.identity').insertAdjacentHTML('afterend',flow);
 
