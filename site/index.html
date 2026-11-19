@@ -156,6 +156,8 @@ h1{font-size:25px}
 
 .staffReport .cards>.card[data-metric="combined"]{grid-column:1 / -1}
 @media screen{.staffReport .cards>.card:not([data-metric="contracts"]):not([data-metric="units"]){min-height:var(--closed-card-height,220px)}.staffReport .cards>.card:has(.channelDetails[open]):not([data-metric="contracts"]):not([data-metric="units"]){min-height:calc(var(--closed-card-height,220px) + var(--detail-height,160px))}}
+
+.card[data-metric="combined"]>.channelDetails>summary{text-align:right}
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
