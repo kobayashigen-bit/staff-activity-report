@@ -144,13 +144,15 @@ h1{font-size:25px}
 .printFrame{display:block;width:210mm;height:297mm;border:0;margin:12px auto 24px;background:white}
 @media(max-width:600px){.printModal{padding-top:125px}.printToolbar{justify-content:flex-start}}
 .staffReport .cards>.card:has(.channelDetails[open]){aspect-ratio:auto!important;overflow:visible!important}.staffReport>.transitionFlow{margin-bottom:18px}
+.printSettings{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin:16px 0}.printSettings summary{font-size:16px;font-weight:700}.printSettings p{font-size:14px}.printActions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:12px 0}#printChoices{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}#printChoices fieldset{border:1px solid var(--line);border-radius:8px;min-width:0;padding:12px}#printChoices label{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--ink);padding:5px}#printChoices legend label{font-weight:700}#printChoices input{width:18px;height:18px;flex-shrink:0;margin:0} @media print{.printSettings{display:none!important}}
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
 
-<label>対象月<select id="month"></select></label></section>
+<label>対象月<select id="month"></select></label><label>支店で絞り込み<select id="branch"><option value="">すべての支店</option></select></label><label>並び順<select id="sort"><option value="branch">支店順</option><option value="name">氏名順</option></select></label></section>
+<details class="printSettings"><summary>印刷する支店・スタッフを選択</summary><p>支店にチェックを入れると所属スタッフ全員を選択します。個別に選択・解除することもできます。</p><div class="printActions"><button id="selectAll" type="button">全員を選択</button><button id="clearSelection" type="button">選択を解除</button><button id="printSelected" type="button" disabled>選択したスタッフを印刷</button><span id="selectedCount" role="status" aria-live="polite">0名選択中</span></div><div id="printChoices"></div></details>
 <div id="status" class="status" role="status" aria-live="polite">日報を読み込んでいます…</div><div id="notice" class="notice" hidden></div><div id="empty" hidden>掲載対象のスタッフはいません。</div>
-<div id="memberCount" class="memberCount"></div><div id="content"></div><template id="staffTemplate"><details class="staffReport"><summary class="identity"><div><p data-field="affiliation"></p><h2 data-field="name"></h2></div><span class="staffPrintTools"><button type="button" class="staffPrintButton">印刷</button></span></summary>
+<div id="memberCount" class="memberCount"></div><div id="content"></div><template id="staffTemplate"><details class="staffReport"><summary class="identity"><div><p data-field="affiliation"></p><h2 data-field="name"></h2></div></summary>
 <section data-field="assessment" class="assessment" aria-label="確認事項"></section><div data-field="cards" class="cards"></div>
 
 
@@ -172,6 +174,28 @@ function card(title,value,unit,reference,label,diff,digits=0){
  return '<article class="card"><h3>'+title+'</h3><div class="metric">'+fmt(value,digits)+'<span class="unit">'+unit+'</span>'+'</div><div class="bar" aria-hidden="true"><span style="width:'+(ratio==null?0:Math.max(0,Math.min(100,ratio*100)))+'%"></span></div><div class="meta"><span class="standard">'+label+' '+fmt(reference,label==='10口達成者水準'?0:digits)+unit+'</span><span class="delta">'+diff+'</span></div></article>';
 }
 const staffOpenState=new Map();
+const selectedStaff=new Set();
+const staffKey=s=>JSON.stringify([s.branch,s.name]);
+const compareText=(a,b)=>String(a||'').localeCompare(String(b||''),'ja',{numeric:true});
+function reportMembers(){return data.staff.filter(s=>!s.excludeFromReport).sort((a,b)=>$('sort').value==='name'?compareText(a.name,b.name)||compareText(a.branch,b.branch):compareText(a.branch,b.branch)||compareText(a.name,b.name));}
+function updatePrintSelection(){
+ const members=reportMembers(),selected=members.filter(s=>selectedStaff.has(staffKey(s)));
+ $('selectedCount').textContent=selected.length+'名選択中';$('printSelected').disabled=!selected.length;
+ document.querySelectorAll('[data-staff-key]').forEach(box=>box.checked=selectedStaff.has(box.dataset.staffKey));
+ document.querySelectorAll('[data-branch-key]').forEach(box=>{const group=members.filter(s=>s.branch===box.dataset.branchKey),count=group.filter(s=>selectedStaff.has(staffKey(s))).length;box.checked=count===group.length&&count>0;box.indeterminate=count>0&&count<group.length;});
+}
+function renderPrintChoices(){
+ const members=reportMembers(),valid=new Set(members.map(staffKey));
+ for(const key of selectedStaff)if(!valid.has(key))selectedStaff.delete(key);
+ $('printChoices').replaceChildren();
+ for(const branch of [...new Set(members.map(s=>s.branch))].sort(compareText)){
+  const group=members.filter(s=>s.branch===branch),section=document.createElement('fieldset'),legend=document.createElement('legend'),label=document.createElement('label'),box=document.createElement('input');
+  box.type='checkbox';box.dataset.branchKey=branch;label.append(box,document.createTextNode((branch||'支店未設定')+'（'+group.length+'名）'));legend.append(label);section.append(legend);
+  box.onchange=()=>{group.forEach(s=>box.checked?selectedStaff.add(staffKey(s)):selectedStaff.delete(staffKey(s)));updatePrintSelection();};
+  for(const s of group){const label=document.createElement('label'),box=document.createElement('input');box.type='checkbox';box.dataset.staffKey=staffKey(s);label.append(box,document.createTextNode(s.name));section.append(label);box.onchange=()=>{box.checked?selectedStaff.add(staffKey(s)):selectedStaff.delete(staffKey(s));updatePrintSelection();};}
+  $('printChoices').append(section);
+ }updatePrintSelection();
+}
 function selectFunnelAttention(s){
  const metrics=Object.fromEntries(Object.entries(s.metrics).map(([k,v])=>[k,{...v}]));
  const p=metrics.presentations,c=metrics.closings;
@@ -182,10 +206,10 @@ function selectFunnelAttention(s){
  return {...s,metrics};
 }
 function render(){
- const members=data.staff.filter(s=>!s.excludeFromReport);
+ const members=reportMembers().filter(s=>!$('branch').value||s.branch===$('branch').value);
  $('content').replaceChildren();$('empty').hidden=members.length>0;
  $('memberCount').textContent=members.length?'レポート対象者 '+members.length+'名':'';
- members.forEach(s=>{const root=$('staffTemplate').content.firstElementChild.cloneNode(true);$('content').appendChild(root);renderStaff(selectFunnelAttention(s),root);root.querySelector('.staffPrintButton').addEventListener('click',event=>{event.preventDefault();event.stopPropagation();printStaff(root);});const identity=JSON.stringify([s.branch,s.name]);root.open=staffOpenState.get(identity)===true;root.addEventListener('toggle',()=>staffOpenState.set(identity,root.open));});
+ members.forEach(s=>{const root=$('staffTemplate').content.firstElementChild.cloneNode(true);$('content').appendChild(root);renderStaff(selectFunnelAttention(s),root);const identity=staffKey(s);root.open=staffOpenState.get(identity)===true;root.addEventListener('toggle',()=>staffOpenState.set(identity,root.open));});
 }
 function staffSituations(s,report){
  const m=s.metrics||{},num=v=>typeof v==='number'&&Number.isFinite(v),value=k=>m[k]?.value;
@@ -203,15 +227,20 @@ function staffSituations(s,report){
  return result;
 }
 
-function printStaff(root){
- const clone=root.cloneNode(true);clone.open=true;
+function printSelectedStaff(){
+ const members=reportMembers().filter(s=>selectedStaff.has(staffKey(s)));
+ if(!members.length)return;
+ const clones=members.map(s=>{const clone=$('staffTemplate').content.firstElementChild.cloneNode(true);renderStaff(selectFunnelAttention(s),clone);clone.open=true;return clone;});
+ const printContent=document.createDocumentFragment();clones.forEach(clone=>printContent.append(clone));applyDesign(printContent);
+ for(const clone of clones){
  clone.querySelectorAll('.staffPrintTools').forEach(e=>e.remove());
  clone.querySelectorAll('.channelDetails').forEach(e=>e.open=true);
+ }
  const style=[...document.querySelectorAll('style')].map(e=>e.textContent).join('\n');
  const printCSS=`
  @page{size:A4 portrait;margin:8mm}
  *{box-sizing:border-box}html,body{margin:0!important;padding:0!important;background:white!important;color:#20334c;-webkit-print-color-adjust:exact;print-color-adjust:exact}
- .printPage{width:194mm;min-height:281mm;margin:0 auto;background:white;overflow:visible}
+ .printPage+.printPage{break-before:page;page-break-before:always}.printPage{width:194mm;min-height:281mm;margin:0 auto;background:white;overflow:visible}
  .printTitle{font-size:15pt;font-weight:700;margin:0 0 3mm;line-height:1.3;color:#173e7c}
  .staffReport,.staffReport:last-child{padding:0!important;margin:0!important;border:0!important;box-shadow:none!important;background:white!important}
  .staffReport .identity{margin:0 0 3mm!important;padding:3mm!important;border-radius:2mm!important}
@@ -243,12 +272,12 @@ function printStaff(root){
  .flowLink b{font-size:12pt!important}.flowLink>span{font-size:20pt!important}.flowLink small{font-size:8pt!important}
  @media screen{body{padding:8mm!important;background:#e5e7eb!important}}
  `;
- const page='<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>'+esc(root.querySelector('h2').textContent)+' 印刷</title><style>'+style+'\n'+printCSS+'</style></head><body><div class="printPage"><div class="printTitle">'+esc(document.title)+' / '+esc(data.month)+'</div>'+clone.outerHTML+'</div></body></html>';
+ const page='<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>'+esc(document.title)+' 印刷</title><style>'+style+'\n'+printCSS+'</style></head><body>'+clones.map(clone=>'<div class="printPage"><div class="printTitle">'+esc(document.title)+' / '+esc(data.month)+'</div>'+clone.outerHTML+'</div>').join('')+'</body></html>';
  const modal=document.createElement('div');modal.className='printModal';modal.setAttribute('role','dialog');modal.setAttribute('aria-label','スタッフ別 A4印刷プレビュー');modal.setAttribute('aria-modal','true');
- modal.innerHTML='<div class="printToolbar"><strong>A4縦・1名分の印刷プレビュー</strong><span>チャネル別の内訳も印刷します（複数ページ）</span><button class="printGo">印刷する</button><button class="printClose">閉じる</button></div><iframe title="A4印刷イメージ" class="printFrame"></iframe>';
+ modal.innerHTML='<div class="printToolbar"><strong>A4縦・'+members.length+'名分の印刷プレビュー</strong><span>チャネル別の内訳も印刷します（複数ページ）</span><button class="printGo">印刷する</button><button class="printClose">閉じる</button></div><iframe title="A4印刷イメージ" class="printFrame"></iframe>';
  document.body.append(modal);const frame=modal.querySelector('iframe');frame.srcdoc=page;
  modal.querySelector('.printGo').onclick=()=>{frame.contentWindow.focus();frame.contentWindow.print();};
- const close=()=>{modal.remove();root.querySelector('.staffPrintButton').focus();};
+ const close=()=>{modal.remove();$('printSelected').focus();};
  modal.querySelector('.printClose').onclick=close;
  modal.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
  modal.querySelector('.printClose').focus();
@@ -320,8 +349,8 @@ function renderStaff(s,root){
 
 function loaded(r){loading=false;data=r;$('title').textContent=(r.areaLabel?r.areaLabel+'｜':'')+'スタッフ別活動レポート';document.title=$('title').textContent;options('month',r.months.includes(r.month)?r.months:[r.month,...r.months]);$('month').value=r.month;
  $('status').textContent='';
- const warnings=[];if(r.mappingPendingCount)warnings.push('氏名の照合待ち '+r.mappingPendingCount+'名。誤った不足判定を避けるため掲載を保留しています。');if(r.updateFailed)warnings.push('自動更新を再試行中です。前回正常に更新できたデータを表示しています。');if(r.preview)warnings.push('画面確認用です。データ更新はGAS版で元シートに接続します。');if(r.invalidCount)warnings.push('数値の確認待ち '+r.invalidCount+'名表記。異なる重複回答・入力不備がある人の数値判定は保留しています。');if(r.issues.length)warnings.push('日付などの不備で集計できない回答 '+r.issues.length+'件。');
- $('notice').hidden=!warnings.length;$('notice').className='notice';$('notice').textContent=warnings.join(' ');render();applyDesign();}
+ options('branch',[...new Set(reportMembers().map(s=>s.branch))].sort(compareText),'すべての支店');
+ $('notice').hidden=true;$('notice').textContent='';renderPrintChoices();render();applyDesign();}
 function failure(e){loading=false;$('status').textContent='更新に失敗しました。';$('notice').hidden=false;$('notice').className='notice error';$('notice').textContent=e.message||String(e);}
 
 async function refresh(){
@@ -345,7 +374,12 @@ async function boot(){
   await refresh();
  }catch(e){failure(e);}
 }
-$('month').onchange=refresh;
+$('month').onchange=()=>{selectedStaff.clear();refresh();};
+$('branch').onchange=()=>{render();applyDesign();};
+$('sort').onchange=()=>{render();renderPrintChoices();applyDesign();};
+$('selectAll').onclick=()=>{reportMembers().forEach(s=>selectedStaff.add(staffKey(s)));updatePrintSelection();};
+$('clearSelection').onclick=()=>{selectedStaff.clear();updatePrintSelection();};
+$('printSelected').onclick=printSelectedStaff;
 setInterval(()=>{if(!document.hidden&&!new URLSearchParams(location.search).has('preview'))refresh();},60000);
 window.addEventListener('message',event=>{
  if(event.origin!==location.origin||event.source!==window.parent||event.data?.type!=='report-design')return;

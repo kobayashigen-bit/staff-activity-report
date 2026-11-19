@@ -1,5 +1,5 @@
 const reportDetailsState=new Map();
-function applyDesign(){
+function applyDesign(scope=document){
  const keys=['reporting','dailyHours','visits','approaches','presentations','closings','contracts','units'];
  const n=(k,fallback)=>Number.isFinite(Number(design[k]))?Math.max(0,Math.min(100,Number(design[k]))):fallback;
  const color=(k,fallback)=>/^#[0-9a-f]{6}$/i.test(design[k]||'')?design[k]:fallback;
@@ -31,7 +31,7 @@ function applyDesign(){
  let style=document.getElementById('editableDesign');if(!style){style=document.createElement('style');style.id='editableDesign';document.head.append(style);}style.textContent=css;
  document.getElementById('title').textContent=(data?.areaLabel?data.areaLabel+'｜':'')+(design.title||'スタッフ別活動レポート');
  document.title=document.getElementById('title').textContent;
- document.querySelectorAll('.staffReport').forEach(staff=>{
+ scope.querySelectorAll('.staffReport').forEach(staff=>{
   const container=staff.querySelector('[data-field="cards"]');
   const cards=[...staff.querySelectorAll('.card')];
   cards.forEach((card,i)=>{if(!card.dataset.metric)card.dataset.metric=keys[i];});
@@ -59,7 +59,7 @@ function applyDesign(){
   }
   staff.querySelector('[data-field="assessment"]').hidden=design.showAssessment===false||!staff.querySelector('.assessmentGap');
  });
- document.querySelectorAll('.reportReminder').forEach(x=>x.textContent=design.reminder??'出勤日数分の日報が入力されているかご確認ください');
- document.querySelectorAll('.attentionLabel,.assessmentBadge').forEach(x=>x.textContent=design.badge||'要確認');
- document.querySelectorAll('.standard').forEach(x=>{if(x.textContent.startsWith('10口達成者水準'))x.textContent=x.textContent.replace('10口達成者水準',design.standard||'10口達成者水準');});
+ scope.querySelectorAll('.reportReminder').forEach(x=>x.textContent=design.reminder??'出勤日数分の日報が入力されているかご確認ください');
+ scope.querySelectorAll('.attentionLabel,.assessmentBadge').forEach(x=>x.textContent=design.badge||'要確認');
+ scope.querySelectorAll('.standard').forEach(x=>{if(x.textContent.startsWith('10口達成者水準'))x.textContent=x.textContent.replace('10口達成者水準',design.standard||'10口達成者水準');});
 }
