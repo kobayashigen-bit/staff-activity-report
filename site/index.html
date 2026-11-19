@@ -330,7 +330,7 @@ function renderStaff(s,root){
  const breakdown=(key,time=false)=>{
   const groups=[['ブロック',[0]],['自社イベント',[2]],['店頭イベント',[1]],['施行後訪問',[3]],['その他',[4,5]]];
   return '<details class="channelDetails"><summary>詳細</summary><div class="channelRows">'+groups.map(([label,indices])=>{
-   const values=indices.map(i=>s.channels?.[i]?.[key]);
+   const values=indices.map(i=>{const channel=s.channels?.[i];return key==='combined'?(typeof channel?.prospects==='number'&&typeof channel?.appointments==='number'?channel.prospects+channel.appointments:null):channel?.[key];});
    const value=values.every(v=>typeof v==='number'&&Number.isFinite(v))?values.reduce((a,b)=>a+b,0):null;
    return '<div><span>'+label+'</span><b>'+fmt(value==null?null:time?value/60:value,time?1:0)+(time?'時間':key==='units'?'口':'件')+'</b></div>';
   }).join('')+'</div></details>';
@@ -340,7 +340,7 @@ function renderStaff(s,root){
  let html=box('reporting','報告日数（月累計）',valueHtml(s.reportedDays,'日')+'<p class="reportReminder">出勤日数分の日報が入力されているかご確認ください</p>');
  const daily=s.metrics.dailyHours;
  html+=box('dailyHours','募集活動時間',valueHtml(daily.value,'時間',1)+'<div class="compactMeta">当月累計：'+fmt(s.minutes==null?null:s.minutes/60,1)+'時間</div>'+breakdown('minutes',true));
- ['visits','approaches','presentations','closings'].forEach(key=>{
+ ['visits','approaches','presentations','closings','combined'].forEach(key=>{
   const m=s.metrics[key],standard=m.goal/20*s.days,progress=m.value==null||!s.days?null:m.value/standard*100;
   let body=key==='visits'?'<div class="subMetricLabel">訪問件数</div>':'';
   body+=valueHtml(m.value,'件');
@@ -359,6 +359,7 @@ function renderStaff(s,root){
  const flow='<div class="transitionFlow" data-field="transitionFlow" aria-label="営業活動の実績と移行率"><div class="transitionHeading">各指標への移行率</div>'+stages.map(([label,value],i)=>'<span class="flowStage">'+label+'<b class="flowActual">（'+fmt(value)+'件）</b></span>'+(i<3?'<span class="flowLink"><b>'+rateText(rates[i])+'</b><span aria-hidden="true">⟶</span><small>移行率</small></span>':'')).join('')+'</div>';
 
  $('cards').innerHTML=html;
+ $('cards').appendChild($('cards').querySelector('[data-metric="combined"]'));
  $('cards').querySelector('[data-metric="visits"]').classList.toggle('noCalls',s.calls===0);
  root.querySelector('summary.identity').insertAdjacentHTML('afterend',flow);
 
