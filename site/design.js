@@ -1,6 +1,6 @@
 const reportDetailsState=new Map();
 function applyDesign(scope=document){
- const keys=['reporting','dailyHours','visits','approaches','presentations','closings','contracts','units'];
+ const keys=['reporting','dailyHours','visits','approaches','presentations','closings','contracts','units','combined'];
  const n=(k,fallback)=>Number.isFinite(Number(design[k]))?Math.max(0,Math.min(100,Number(design[k]))):fallback;
  const color=(k,fallback)=>/^#[0-9a-f]{6}$/i.test(design[k]||'')?design[k]:fallback;
  const fontIncrease={labelSize:2,valueSize:2,primaryValueSize:2,reminderSize:5};
