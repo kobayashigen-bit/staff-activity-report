@@ -363,7 +363,7 @@ function renderStaff(s,root){
  const flow='<div class="transitionFlow" data-field="transitionFlow" aria-label="営業活動の実績と移行率"><div class="transitionHeading">各指標への移行率</div>'+stages.map(([label,value],i)=>'<span class="flowStage">'+label+'<b class="flowActual">（'+fmt(value)+'件）</b></span>'+(i<3?'<span class="flowLink"><b>'+rateText(rates[i])+'</b><span aria-hidden="true">⟶</span><small>移行率</small></span>':'')).join('')+'</div>';
 
  $('cards').innerHTML=html;
- $('cards').querySelector('[data-metric="closings"]').insertAdjacentElement('afterend',$('cards').querySelector('[data-metric="combined"]'));
+ $('cards').appendChild($('cards').querySelector('[data-metric="combined"]'));
  $('cards').querySelector('[data-metric="visits"]').classList.toggle('noCalls',s.calls===0);
  root.querySelector('summary.identity').insertAdjacentHTML('afterend',flow);
 
