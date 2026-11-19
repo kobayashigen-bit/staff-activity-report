@@ -143,13 +143,14 @@ h1{font-size:25px}
 .printToolbar strong{font-size:15px}.printToolbar span{font-size:12px}.printToolbar button{font-size:14px}
 .printFrame{display:block;width:210mm;height:297mm;border:0;margin:12px auto 24px;background:white}
 @media(max-width:600px){.printModal{padding-top:125px}.printToolbar{justify-content:flex-start}}
+.staffReport .cards>.card:has(.channelDetails[open]){aspect-ratio:auto!important;overflow:visible!important}.staffReport>.transitionFlow{margin-bottom:18px}
 </style></head><body>
 <header><h1 id="title">スタッフ別活動レポート</h1></header>
 <main><section class="filters" aria-label="表示条件">
 
 <label>対象月<select id="month"></select></label></section>
 <div id="status" class="status" role="status" aria-live="polite">日報を読み込んでいます…</div><div id="notice" class="notice" hidden></div><div id="empty" hidden>掲載対象のスタッフはいません。</div>
-<div id="memberCount" class="memberCount"></div><div id="content"></div><template id="staffTemplate"><details class="staffReport"><summary class="identity"><div><p data-field="affiliation"></p><h2 data-field="name"></h2></div><span class="staffPrintTools"><button type="button" class="staffPrintButton">印刷</button><span class="staffPrintHint">← 印刷はこちらから</span></span></summary>
+<div id="memberCount" class="memberCount"></div><div id="content"></div><template id="staffTemplate"><details class="staffReport"><summary class="identity"><div><p data-field="affiliation"></p><h2 data-field="name"></h2></div><span class="staffPrintTools"><button type="button" class="staffPrintButton">印刷</button></span></summary>
 <section data-field="assessment" class="assessment" aria-label="確認事項"></section><div data-field="cards" class="cards"></div>
 
 
@@ -198,19 +199,19 @@ function staffSituations(s,report){
   [num(s.contracts)&&num(c)&&c>0&&s.contracts/c<=.1+1e-10,'クロージングのタイミング、文言、言い方に修正余地がある']
  ];
  const first=conditions.find(([matches])=>matches),result=first?[first[1]]:[];
- if(num(combined)&&num(c)&&combined>c)result.push('見込み違いが発生している可能性がある');
+ if(num(combined)&&num(c)&&combined>c)result.push('見込みランクを読み違えている可能性がある');
  return result;
 }
 
 function printStaff(root){
  const clone=root.cloneNode(true);clone.open=true;
  clone.querySelectorAll('.staffPrintTools').forEach(e=>e.remove());
- clone.querySelectorAll('.channelDetails').forEach(e=>e.open=false);
+ clone.querySelectorAll('.channelDetails').forEach(e=>e.open=true);
  const style=[...document.querySelectorAll('style')].map(e=>e.textContent).join('\n');
  const printCSS=`
  @page{size:A4 portrait;margin:8mm}
  *{box-sizing:border-box}html,body{margin:0!important;padding:0!important;background:white!important;color:#20334c;-webkit-print-color-adjust:exact;print-color-adjust:exact}
- .printPage{width:194mm;height:281mm;margin:0 auto;background:white;overflow:hidden}
+ .printPage{width:194mm;min-height:281mm;margin:0 auto;background:white;overflow:visible}
  .printTitle{font-size:15pt;font-weight:700;margin:0 0 3mm;line-height:1.3;color:#173e7c}
  .staffReport,.staffReport:last-child{padding:0!important;margin:0!important;border:0!important;box-shadow:none!important;background:white!important}
  .staffReport .identity{margin:0 0 3mm!important;padding:3mm!important;border-radius:2mm!important}
@@ -221,8 +222,8 @@ function printStaff(root){
  .situationList{margin:1mm 0 0!important;padding-left:5mm!important}
  .situationList li.assessmentGap{font-size:11pt!important;line-height:1.35!important;margin:1mm 0!important}
  .staffReport .cards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3mm!important}
- .staffReport .cards>.card{height:45mm!important;aspect-ratio:auto!important;padding:2.5mm!important;overflow:hidden!important;break-inside:avoid;font-size:10pt!important;line-height:1.25!important}
- .staffReport .cards>.card[data-metric="visits"],.staffReport .cards>.card[data-metric="approaches"]{height:49mm!important}
+ .staffReport .cards>.card{min-height:45mm!important;height:auto!important;aspect-ratio:auto!important;padding:2.5mm!important;overflow:hidden!important;break-inside:avoid;font-size:10pt!important;line-height:1.25!important}
+ .staffReport .cards>.card[data-metric="visits"],.staffReport .cards>.card[data-metric="approaches"]{min-height:49mm!important;height:auto!important}
  .staffReport .cards>.card h3{font-size:12pt!important;line-height:1.25!important;margin:0 0 2mm!important}
  .staffReport .cards>.card .metric{font-size:23pt!important;line-height:1.15!important;gap:1mm!important}
  .staffReport .cards>.card .unit{font-size:11pt!important}
@@ -235,7 +236,7 @@ function printStaff(root){
  .subMetricLabel{font-size:10pt!important;display:inline!important}
  .card[data-metric="visits"] .metric{display:inline-flex!important;font-size:20pt!important}
  .card .attentionLabel{float:right;font-size:9pt!important;margin:0!important;padding:0 1mm!important}
- .channelDetails{display:none!important}
+ .channelDetails{display:block!important;margin-top:2mm!important;padding-top:1mm!important}.channelDetails>summary{display:none!important}.channelRows>div{font-size:10pt!important;padding:1mm 0!important}.staffReport .cards{display:block!important}.staffReport .cards>.card{display:inline-block!important;vertical-align:top!important;width:calc(50% - 2mm)!important;margin:0 1mm 3mm!important;overflow:visible!important;break-inside:avoid!important}.staffReport>.transitionFlow{margin:0 0 3mm!important}
  .transitionFlow{padding:2mm!important;gap:1mm!important;break-inside:avoid}
  .transitionHeading{font-size:11pt!important;margin-bottom:1mm!important}
  .flowStage{font-size:10pt!important}.flowActual{font-size:11pt!important;margin-top:1mm!important}
@@ -244,7 +245,7 @@ function printStaff(root){
  `;
  const page='<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>'+esc(root.querySelector('h2').textContent)+' 印刷</title><style>'+style+'\n'+printCSS+'</style></head><body><div class="printPage"><div class="printTitle">'+esc(document.title)+' / '+esc(data.month)+'</div>'+clone.outerHTML+'</div></body></html>';
  const modal=document.createElement('div');modal.className='printModal';modal.setAttribute('role','dialog');modal.setAttribute('aria-label','スタッフ別 A4印刷プレビュー');modal.setAttribute('aria-modal','true');
- modal.innerHTML='<div class="printToolbar"><strong>A4縦・1名分の印刷プレビュー</strong><span>内訳は折りたたんだ状態で印刷します</span><button class="printGo">印刷する</button><button class="printClose">閉じる</button></div><iframe title="A4印刷イメージ" class="printFrame"></iframe>';
+ modal.innerHTML='<div class="printToolbar"><strong>A4縦・1名分の印刷プレビュー</strong><span>チャネル別の内訳も印刷します（複数ページ）</span><button class="printGo">印刷する</button><button class="printClose">閉じる</button></div><iframe title="A4印刷イメージ" class="printFrame"></iframe>';
  document.body.append(modal);const frame=modal.querySelector('iframe');frame.srcdoc=page;
  modal.querySelector('.printGo').onclick=()=>{frame.contentWindow.focus();frame.contentWindow.print();};
  const close=()=>{modal.remove();root.querySelector('.staffPrintButton').focus();};
@@ -267,7 +268,7 @@ function renderStaff(s,root){
   ['プレゼンまで進めないことが多い',['presentations']],
   ['クロージングをしていない/できないトークの流れになっている',['closings']],
   ['クロージングのタイミング、文言、言い方に修正余地がある',['closings','contracts']],
-  ['見込み違いが発生している可能性がある',['combined']]
+  ['見込みランクを読み違えている可能性がある',['combined']]
  ];
  related.forEach(([text,keys])=>{if(situations.includes(text))keys.forEach(k=>mentioned.add(k));});
  const badgeFor=key=>{
@@ -293,7 +294,7 @@ function renderStaff(s,root){
  const box=(key,title,body)=>'<article data-metric="'+key+'" class="card'+(top===key?' attention':'')+(((key==='contracts'&&contractAlert)||(key==='units'&&unitsAlert))?' contractAttention':'')+'">'+(badgeFor(key)?'<span class="attentionLabel">要確認</span>':'')+'<h3>'+title+'</h3>'+body+'</article>';
  let html=box('reporting','報告日数（月累計）',valueHtml(s.reportedDays,'日')+'<p class="reportReminder">出勤日数分の日報が入力されているかご確認ください</p>');
  const daily=s.metrics.dailyHours;
- html+=box('dailyHours','募集活動時間',valueHtml(s.minutes==null?null:s.minutes/60,'時間',1)+'<div class="compactMeta">1活動日あたり：'+fmt(daily.value,1)+'時間</div>'+breakdown('minutes',true));
+ html+=box('dailyHours','募集活動時間',valueHtml(daily.value,'時間',1)+'<div class="compactMeta">当月累計：'+fmt(s.minutes==null?null:s.minutes/60,1)+'時間</div>'+breakdown('minutes',true));
  ['visits','approaches','presentations','closings'].forEach(key=>{
   const m=s.metrics[key],standard=m.goal/20*s.days,progress=m.value==null||!s.days?null:m.value/standard*100;
   let body=key==='visits'?'<div class="subMetricLabel">訪問件数</div>':'';
@@ -313,7 +314,7 @@ function renderStaff(s,root){
  const flow='<div class="transitionFlow" data-field="transitionFlow" aria-label="営業活動の実績と移行率"><div class="transitionHeading">各指標への移行率</div>'+stages.map(([label,value],i)=>'<span class="flowStage">'+label+'<b class="flowActual">（'+fmt(value)+'件）</b></span>'+(i<3?'<span class="flowLink"><b>'+rateText(rates[i])+'</b><span aria-hidden="true">⟶</span><small>移行率</small></span>':'')).join('')+'</div>';
 
  $('cards').innerHTML=html;
- $('cards').querySelector('[data-metric="presentations"]').insertAdjacentHTML('beforebegin',flow);
+ root.querySelector('summary.identity').insertAdjacentHTML('afterend',flow);
 
 }
 
