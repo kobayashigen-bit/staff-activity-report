@@ -268,6 +268,7 @@ function printSelectedStaff(){
  .staffReport .cards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3mm!important}
  .staffReport .cards>.card{min-height:45mm!important;height:auto!important;aspect-ratio:auto!important;padding:2.5mm!important;overflow:hidden!important;break-inside:avoid;font-size:10pt!important;line-height:1.25!important}
  .staffReport .cards>.card[data-metric="visits"],.staffReport .cards>.card[data-metric="approaches"]{min-height:49mm!important;height:auto!important}
+ .staffReport .cards>.card[data-metric="visits"].noCalls{min-height:0!important}
  .staffReport .cards>.card h3{font-size:12pt!important;line-height:1.25!important;margin:0 0 2mm!important}
  .staffReport .cards>.card .metric{font-size:23pt!important;line-height:1.15!important;gap:1mm!important}
  .staffReport .cards>.card .unit{font-size:11pt!important}
@@ -345,9 +346,9 @@ function renderStaff(s,root){
   body+=valueHtml(m.value,'件');
   const barValue=progress==null?0:Math.max(0,Math.min(100,progress));
   body+='<div class="visualProgress'+(progress!=null&&progress>=100?' achieved':'')+'"><div class="progressHeading"><span>進捗率</span><b>'+fmt(progress)+'％</b></div><div class="progressTrack" role="img" aria-label="進捗率 '+fmt(progress)+'パーセント"><span style="width:'+barValue+'%"></span></div><div class="progressTarget">目安：'+fmt(standard)+'件</div></div>';
-  if(key==='visits')body+='<div class="subMetricLabel">声掛け数</div>'+valueHtml(s.calls,'件');
+  if(key==='visits'&&s.calls!==0)body+='<div class="subMetricLabel">声掛け数</div>'+valueHtml(s.calls,'件');
   if(key!=='visits')body+=breakdown(key);
-  html+=box(key,key==='visits'?'訪問件数・声掛け数':names[key],body);
+  html+=box(key,key==='visits'?(s.calls===0?'訪問件数':'訪問件数・声掛け数'):names[key],body);
  });
  html+=box('contracts','契約件数',valueHtml(s.contracts,'件')+breakdown('contracts'));
  html+=box('units','口数',valueHtml(s.units,'口')+breakdown('units'));
@@ -358,6 +359,7 @@ function renderStaff(s,root){
  const flow='<div class="transitionFlow" data-field="transitionFlow" aria-label="営業活動の実績と移行率"><div class="transitionHeading">各指標への移行率</div>'+stages.map(([label,value],i)=>'<span class="flowStage">'+label+'<b class="flowActual">（'+fmt(value)+'件）</b></span>'+(i<3?'<span class="flowLink"><b>'+rateText(rates[i])+'</b><span aria-hidden="true">⟶</span><small>移行率</small></span>':'')).join('')+'</div>';
 
  $('cards').innerHTML=html;
+ $('cards').querySelector('[data-metric="visits"]').classList.toggle('noCalls',s.calls===0);
  root.querySelector('summary.identity').insertAdjacentHTML('afterend',flow);
 
 }
