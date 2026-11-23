@@ -239,9 +239,9 @@ function staffSituations(s,report){
  const visits=ratio('visits'),approaches=ratio('approaches'),p=value('presentations'),c=value('closings'),a=value('approaches'),combined=value('combined');
  const conditions=[
   [visits!==null&&visits<=.7+1e-10&&num(s.units)&&s.units<10,'訪問件数が不足している'],
-  [visits!==null&&approaches!==null&&visits>=.7-1e-10&&approaches<=.7+1e-10,'アプローチの前にお断りされていることが多い'],
+  [visits!==null&&approaches!==null&&visits>=.7-1e-10&&approaches<=.7+1e-10,'アプローチの前にお断りされることが多い'],
   [num(p)&&num(a)&&a>0&&p/a<.1-1e-10,'プレゼンまで進めないことが多い'],
-  [num(p)&&num(c)&&p>0&&c/p<=.5+1e-10,'クロージングをしていない/できないトークの流れになっている'],
+  [num(p)&&num(c)&&p>0&&c/p<=.5+1e-10,'クロージングをしていない、またはできないトークの流れになっている'],
   [num(s.contracts)&&num(c)&&c>0&&s.contracts/c<=.1+1e-10,'クロージングのタイミング、文言、言い方に修正余地がある']
  ];
  const first=conditions.find(([matches])=>matches),result=first?[first[1]]:[];
@@ -324,9 +324,9 @@ function renderStaff(s,root){
  const mentioned=new Set();
  const related=[
   ['訪問件数が不足している',['visits']],
-  ['アプローチの前にお断りされていることが多い',['approaches']],
+  ['アプローチの前にお断りされることが多い',['approaches']],
   ['プレゼンまで進めないことが多い',['presentations']],
-  ['クロージングをしていない/できないトークの流れになっている',['closings']],
+  ['クロージングをしていない、またはできないトークの流れになっている',['closings']],
   ['クロージングのタイミング、文言、言い方に修正余地がある',['closings','contracts']],
   ['見込みランクを読み違えている',['combined']]
  ];
