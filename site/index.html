@@ -339,7 +339,7 @@ function renderStaff(s,root){
  const elapsed=data.reportUntil?.slice(0,7)===data.month?Number(data.reportUntil.slice(8)):0;
  const unitsAlert=typeof s.units==='number'&&Number.isFinite(s.units)&&(elapsed>=28?s.units<14:elapsed>=21?s.units<10:elapsed>=14?s.units<6:elapsed>=7?s.units<=2:false);
  const contractAlert=typeof s.contracts==='number'&&Number.isFinite(s.contracts)&&(elapsed>=28?s.contracts<11:elapsed>=21?s.contracts<8:elapsed>=14?s.contracts<5:elapsed>=7?s.contracts<=2:false);
- $('assessment').innerHTML='<span class="phenomenonHeading">起きている可能性がある現象</span><ul class="situationList">'+situations.map(text=>'<li class="assessmentGap">'+esc(text)+'</li>').join('')+'</ul>';
+ $('assessment').innerHTML='<span class="phenomenonHeading">優績者との活動実績比較から推察される現状</span><ul class="situationList">'+situations.map(text=>'<li class="assessmentGap">'+esc(text)+'</li>').join('')+'</ul>';
  $('assessment').hidden=situations.length===0;
 
  const breakdown=(key,time=false)=>{
